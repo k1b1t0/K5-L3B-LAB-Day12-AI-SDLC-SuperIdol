@@ -1,4 +1,4 @@
-# branch haianh @ fd4efea (+ working tree: scenario.py, test_scenario_validation.py), Python 3.10.11, Windows, PYTHONUTF8=1
+# branch haianh @ c2ab8cb (+ working tree: test_p1_integration.py), Python 3.10.11, Windows, PYTHONUTF8=1
 test_choke_and_faint (test_gather_slice1.TestGatherSlice1)
 Hết oxy đủ choke_interval_ticks thì choke trừ HP, HP về 0 thì faint và giỏ rỗng. ... ok
 test_dive_and_surface_events (test_gather_slice1.TestGatherSlice1)
@@ -12,8 +12,9 @@ Giỏ đầy không hái được, phát hold_full và nút không mất. ... ok
 test_gather_node_and_regrow (test_gather_slice2.TestGatherSlice2)
 Hái nút khi ở mặt nước trong interact_radius -> nhận nguyên liệu vào hold, nút đếm lùi regrow. ... ok
 test_state_input_and_clean_stop (test_live.LiveServerTest) ... ok
+test_dock_checked_before_harvest (test_p1_integration.Phase1EndToEnd) ... ok
+test_gather_and_quan_deterministic_bytes (test_p1_integration.Phase1EndToEnd) ... ok
 test_gather_to_quan_full_service (test_p1_integration.Phase1EndToEnd) ... ok
-test_quan_deterministic_bytes (test_p1_integration.Phase1EndToEnd) ... ok
 test_bad_frames_raise (test_python_starter_units.Units) ... ok
 test_catch_is_a_v10_button_and_attack_is_not (test_python_starter_units.Units) ... ok
 test_id_allocator_continues_after_max (test_python_starter_units.Units) ... ok
@@ -65,7 +66,7 @@ test_too_few_members (test_team_check.TeamCheck) ... ok
 test_wrong_size_duplicate_and_outsider (test_team_check.TeamCheck) ... ok
 
 ----------------------------------------------------------------------
-Ran 50 tests in 11.364s
+Ran 51 tests in 11.462s
 
 OK
 exit 0
