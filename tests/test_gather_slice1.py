@@ -2,6 +2,8 @@
 
 import unittest
 
+from helpers import inst
+
 from chonoi.contract import load_contract
 from chonoi.runner import Session
 from helpers import Workdir, events, frames, read_jsonl, run_headless, snapshots, write_json
@@ -43,7 +45,7 @@ class TestGatherSlice1(unittest.TestCase):
         choke_ticks = self.tuning["gather"]["choke_interval_ticks"]
         sc = {"gather": {
             "player": {"pos": [10.0, 5.0], "oxygen_ticks": 0, "zero_oxy_ticks": choke_ticks - 1, "hp": 1},
-            "hold": ["ca_loc", "ca_linh"]
+            "hold": inst(["ca_loc", "ca_linh"])
         }}
         s = Session("gather", self.tuning, sc["gather"], seed=1)
         from chonoi.inputs import InputState

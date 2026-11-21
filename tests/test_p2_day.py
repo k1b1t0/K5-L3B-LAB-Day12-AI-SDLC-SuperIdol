@@ -8,7 +8,7 @@ import math
 import os
 import unittest
 
-from helpers import ROOT, Workdir, events, frames, read_jsonl, run_headless, snapshots, write_json
+from helpers import ROOT, Workdir, counts, events, frames, inst, kinds, read_jsonl, run_headless, snapshots, write_json
 
 
 def tuning():
@@ -63,27 +63,28 @@ class FishAndMonsters(unittest.TestCase):
 
     def test_monster_hit_loses_half_hold_lifo_and_recoils(self):
         with Workdir() as w:
-            code, err, rows = run(w, "gather", self.t["monsters"]["invuln_ticks"], self._monster_sc(3, ["ca_loc", "bong_sung", "ca_linh"]),
+            code, err, rows = run(w, "gather", self.t["monsters"]["invuln_ticks"], self._monster_sc(3, inst(["ca_loc", "bong_sung", "ca_linh"])),
                                   None, "--snapshot-every", "1")
             self.assertEqual(code, 0, err)
         hits = events(rows, "monster_hit")
         self.assertEqual(len(hits), 1, "bất tử 90 tick: không hit lần hai")
         self.assertEqual(hits[0]["tick"], 1)
         self.assertEqual(hits[0]["data"]["hp"], 2)
-        self.assertEqual(hits[0]["data"]["lost"], ["ca_linh"])  # floor(3 × 0.5) = 1, nhặt sau mất trước
+        self.assertEqual(kinds(hits[0]["data"]["lost"]), ["ca_linh"])  # floor(3 × 0.5) = 1, nhặt sau mất trước
+        self.assertEqual(hits[0]["data"]["lost"][0]["id"], "I3")  # v1.2: lost là cá thể
         s1 = [s for s in snapshots(rows) if s["tick"] == 1][0]
         self.assertEqual(s1["player"]["invuln_ticks"], self.t["monsters"]["invuln_ticks"])
         self.assertEqual(s1["monsters"][0]["state"], "recoil")
-        self.assertEqual(s1["hold"], ["ca_loc", "bong_sung"])
+        self.assertEqual(kinds(s1["hold"]), ["ca_loc", "bong_sung"])
 
     def test_monster_faint_ends_gather_same_tick(self):
         with Workdir() as w:
-            code, err, rows = run(w, "gather", 10, self._monster_sc(1, ["ca_loc", "bong_sung"]))
+            code, err, rows = run(w, "gather", 10, self._monster_sc(1, inst(["ca_loc", "bong_sung"])))
             self.assertEqual(code, 0, err)
         names = [e["name"] for e in events(rows)]
         self.assertEqual(names, ["monster_hit", "faint", "gather_end"])
         faint = events(rows, "faint")[0]["data"]
-        self.assertEqual(faint, {"cause": "monster", "lost": ["ca_loc"], "hp": 0})
+        self.assertEqual((faint["cause"], kinds(faint["lost"]), faint["hp"]), ("monster", ["ca_loc"], 0))
         self.assertEqual(events(rows, "gather_end")[0]["data"]["reason"], "fainted")
         self.assertEqual(rows[-1]["reason"], "fainted")
 
@@ -192,12 +193,13 @@ class DayLoop(unittest.TestCase):
 
     def test_scenario_hold_goes_to_quan_stock(self):
         sc = {"day": {"money": 200, "earned": 200},
-              "gather": {"hold": ["ca_loc", "bong_sung", "bong_sung"], "random_fish": False}}
+              "gather": {"hold": inst(["ca_loc", "bong_sung", "bong_sung"]), "random_fish": False}}
         with Workdir() as w:
             code, err, rows = run(w, "day", 2, sc, frames({"tick": 0, "interact": True}))
             self.assertEqual(code, 0, err)
         s1 = [s for s in snapshots(rows) if s["tick"] == 1][0]
-        self.assertEqual((s1["phase"], s1["stock"], s1["money"]), ("quan", {"bong_sung": 2, "ca_loc": 1}, 200))
+        self.assertEqual((s1["phase"], counts(s1["stock"]), s1["money"]), ("quan", {"bong_sung": 2, "ca_loc": 1}, 200))
+        self.assertEqual([i["id"] for i in s1["stock"]], ["I1", "I2", "I3"])  # v1.2: giữ id khi bàn giao
 
 
 class DayCliAndScenarioExit2(unittest.TestCase):
@@ -223,12 +225,12 @@ class DayCliAndScenarioExit2(unittest.TestCase):
         self.assertEqual(self._code("--mode", "day", "--days", "5")[0], 0)
 
     def test_day_rejects_file_inventory_flags(self):
-        self.assertEqual(self._code("--mode", "day", inventory={"items": {}})[0], 2)
+        self.assertEqual(self._code("--mode", "day", inventory={"items": []})[0], 2)
         self.assertEqual(self._code("--mode", "day", "--inventory-out", "x.json")[0], 2)
 
     def test_bad_day_scenarios(self):
         bad = {
-            "quan.stock bị cấm": {"quan": {"stock": {"ca_loc": 1}}},
+            "quan.stock bị cấm": {"quan": {"stock": inst(["ca_loc"])}},
             "quan.reputation bị cấm": {"quan": {"reputation": 3}},
             "money > earned": {"day": {"money": 10, "earned": 5}},
             "money không kèm earned": {"day": {"money": 10}},
@@ -268,7 +270,7 @@ class QuanTwoStovesAndClosing(unittest.TestCase):
         t = tuning()
         q = t["quan"]
         sc = {"quan": {"random_customers": False, "player": {"pos": [3.5, 8]}, "time_left_ticks": 400,
-                       "stock": {"ca_loc": 2},
+                       "stock": inst(["ca_loc", "ca_loc"]),
                        "customers": [{"id": "C1", "table_id": "T1", "dish_id": "ca_loc_nuong_trui"},
                                      {"id": "C2", "table_id": "T2", "dish_id": "ca_loc_nuong_trui"},
                                      {"id": "C3", "table_id": "T3", "dish_id": "ca_loc_nuong_trui",
@@ -288,7 +290,7 @@ class QuanTwoStovesAndClosing(unittest.TestCase):
         self.assertEqual(closing, [("customer_left", "C1", "closing"), ("customer_left", "C2", "closing"),
                                    ("paid", "C3", "closing")])
         end = events(rows, "quan_end")[0]["data"]
-        self.assertEqual(end["earned"], 72)
+        self.assertEqual(end["earned"], 72)  # C3 khai sẵn base_price 60 + tip 12
         self.assertAlmostEqual(end["reputation"], q["reputation_initial"] + q["tip_reputation"])  # không trừ khi đóng
         snaps = snapshots(rows)
         self.assertTrue(all(s["stoves"][0]["dish"] is None for s in snaps[-1:]), "đóng ca dọn món của đơn")

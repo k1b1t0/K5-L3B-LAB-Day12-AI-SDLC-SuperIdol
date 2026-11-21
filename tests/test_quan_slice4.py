@@ -2,6 +2,8 @@
 
 import unittest
 
+from helpers import inst
+
 from chonoi.contract import load_contract
 from chonoi.inputs import InputState
 from chonoi.runner import Session
@@ -16,14 +18,14 @@ class TestQuanSlice4(unittest.TestCase):
         # B1 ở [2, 8], T1 ở [9, 2]
         sc = {
             "player": {"pos": [2.0, 8.0]},  # đứng sát bếp B1
-            "stock": {"ca_loc": 2},
+            "stock": inst(["ca_loc", "ca_loc"]),
             "customers": [{
                 "id": "C1",
                 "table_id": "T1",
                 "dish_id": "ca_loc_nuong_trui",
                 "state": "waiting",
                 "patience_ticks_left": 3600,
-                "reserved": {"ca_loc": 1}
+                "reserved": ["I1"]
             }],
             "random_customers": False
         }
@@ -34,7 +36,8 @@ class TestQuanSlice4(unittest.TestCase):
         self.assertIn("cook_started", [r["name"] for r in evs])
         stove = s.sim.stoves[0]
         self.assertEqual(stove["state"], "cooking")
-        self.assertEqual(stove["dish"], {"order_id": "C1", "dish_id": "ca_loc_nuong_trui", "base_price": 60})
+        # v1.2: hao tươi ở đầu bước trước interact -> fresh 100 - 1/240; base_price = floor(60 × fresh / 100) = 59
+        self.assertEqual(stove["dish"], {"order_id": "C1", "dish_id": "ca_loc_nuong_trui", "base_price": 59})
 
         # 2. Chờ 6 giây (360 tick) để món chín
         cook_ticks = stove["cook_ticks_left"]

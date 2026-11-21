@@ -13,6 +13,8 @@ DISH = "ca_loc_nuong_trui"  # cook_s = 6 -> 360 tick
 
 PAY = {"order_id": "C1", "dish_id": DISH, "base_price": 60}  # v1.1: món ở bếp/tay mang đơn
 C1_ASSIGNED = {"id": "C1", "table_id": "T1", "dish_id": DISH, "order_status": "assigned"}
+STOCK1 = [{"id": "I1", "kind": "ca_loc", "fresh": 100}]  # v1.2: kho cá thể
+STOCK2 = [{"id": "I1", "kind": "ca_loc", "fresh": 100}, {"id": "I2", "kind": "ca_loc", "fresh": 100}]
 
 
 def _stove(**kw):
@@ -42,7 +44,7 @@ BAD_QUAN = {
     "khách thiếu dish_id": {"customers": [{"id": "C1", "table_id": "T1"}]},
     "khách món lạ": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": "pho"}]},
     "khách bàn không tồn tại": {"customers": [{"id": "C1", "table_id": "T9", "dish_id": DISH}]},
-    "hai khách cùng bàn": {"stock": {"ca_loc": 2},
+    "hai khách cùng bàn": {"stock": STOCK2,
                            "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH},
                                          {"id": "C2", "table_id": "T1", "dish_id": DISH}]},
     "khách chờ hết kiên nhẫn": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
@@ -58,16 +60,27 @@ BAD_QUAN = {
                                                 "base_price": 60, "tip": 0}]},
     "khách chờ mà đơn served": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
                                                "order_status": "served"}]},
-    "reserved nguyên liệu lạ": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
-                                               "reserved": {"thit_bo": 1}}]},
-    "reserved số âm": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
-                                      "reserved": {"ca_loc": -1}}]},
-    "reserved lệch công thức": {"stock": {"ca_loc": 2},
+    # v1.2: reserved là mảng id cá thể
+    "reserved kiểu đếm v1.1": {"stock": STOCK2, "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
+                                                               "reserved": {"ca_loc": 1}}]},
+    "reserved id rỗng": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "reserved": [""]}]},
+    "reserved id trùng": {"stock": STOCK2, "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
+                                                          "reserved": ["I1", "I1"]}]},
+    "reserved lệch công thức": {"stock": STOCK2,
                                 "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
-                                               "reserved": {"ca_loc": 2}}]},
-    "đơn unfulfillable vẫn giữ chỗ": {"stock": {"ca_loc": 1},
+                                               "reserved": ["I1", "I2"]}]},
+    "reserved sai loại": {"stock": [{"id": "I1", "kind": "ca_linh", "fresh": 100}],
+                          "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "reserved": ["I1"]}]},
+    "reserved hàng ươn": {"stock": [{"id": "I1", "kind": "ca_loc", "fresh": 29.5}],
+                          "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "reserved": ["I1"]}]},
+    "đơn unfulfillable vẫn giữ chỗ": {"stock": STOCK1,
                                       "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
-                                                     "order_status": "unfulfillable", "reserved": {"ca_loc": 1}}]},
+                                                     "order_status": "unfulfillable", "reserved": ["I1"]}]},
+    "stock kiểu đếm v1.1": {"stock": {"ca_loc": 1}},
+    "stock id trùng": {"stock": [{"id": "I1", "kind": "ca_loc", "fresh": 100}, {"id": "I1", "kind": "ca_loc", "fresh": 1}]},
+    "stock fresh ngoài miền": {"stock": [{"id": "I1", "kind": "ca_loc", "fresh": 101}]},
+    "tự giữ chỗ khi kho chỉ còn hàng ươn": {"stock": [{"id": "I1", "kind": "ca_loc", "fresh": 10}],
+                                           "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH}]},
     "hand món lạ": {"hand": dict(PAY, dish_id="pho"), "customers": [C1_ASSIGNED]},
     "hand là chuỗi (schema v1.0)": {"hand": DISH},
     "hand thiếu order_id": {"hand": {"dish_id": DISH, "base_price": 60}},
@@ -79,11 +92,11 @@ BAD_QUAN = {
                                        "eat_ticks_left": 100, "base_price": 60, "tip": -1}]},
     "khách trường v1.0 price": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "state": "eating",
                                                "eat_ticks_left": 100, "price": 60, "tip": 0}]},
-    "giữ chỗ vượt kho": {"stock": {"ca_loc": 1},
-                         "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "reserved": {"ca_loc": 1}},
-                                       {"id": "C2", "table_id": "T2", "dish_id": DISH, "reserved": {"ca_loc": 1}}]},
-    "giữ chỗ khi kho rỗng": {"stock": {},
-                             "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "reserved": {"ca_loc": 1}}]},
+    "hai đơn giữ cùng id": {"stock": STOCK1,
+                           "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "reserved": ["I1"]},
+                                         {"id": "C2", "table_id": "T2", "dish_id": DISH, "reserved": ["I1"]}]},
+    "giữ chỗ khi kho rỗng": {"stock": [],
+                             "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "reserved": ["I1"]}]},
     "tự giữ chỗ khi kho thiếu": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH}]},
     "đơn assigned không có món": {"customers": [C1_ASSIGNED]},
     "món trỏ đơn không tồn tại": {"stoves": [{"id": "B1", "state": "ready", "dish": dict(PAY, order_id="C9")}]},
@@ -97,12 +110,12 @@ BAD_QUAN = {
 }
 
 GOOD_QUAN = {
-    "stock": {"ca_loc": 2},
+    "stock": STOCK2,
     "reputation": 4.5,
     "random_customers": False,
     "stoves": [{"id": "B1", "state": "cooking", "dish": dict(PAY, order_id="C2"), "cook_ticks_left": 360}],
     "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "state": "waiting",
-                   "patience_ticks_left": 3600, "reserved": {"ca_loc": 1}},
+                   "patience_ticks_left": 3600, "reserved": ["I1"]},
                   {"id": "C2", "table_id": "T2", "dish_id": DISH, "order_status": "assigned"}],
 }
 
@@ -133,9 +146,9 @@ class ScenarioQuanExit2(unittest.TestCase):
         self.assertEqual(self._run(block)[0], 0)
 
     def test_assigned_order_and_hand_valid(self):
-        block = {"hand": PAY, "stock": {"ca_loc": 1},
+        block = {"hand": PAY, "stock": STOCK1,
                  "stoves": [{"id": "B1", "state": "ready", "dish": dict(PAY, order_id="C2"), "ready_ticks": 5}],
-                 "customers": [dict(C1_ASSIGNED, reserved={}),
+                 "customers": [dict(C1_ASSIGNED, reserved=[]),
                                {"id": "C2", "table_id": "T2", "dish_id": DISH, "order_status": "assigned"},
                                {"id": "C3", "table_id": "T3", "dish_id": DISH, "order_status": "unfulfillable"}]}
         self.assertEqual(self._run(block)[0], 0)
