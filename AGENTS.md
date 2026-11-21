@@ -5,7 +5,8 @@
 ## Lệnh
 - Test: `PYTHONPATH=tests:. python3 -m unittest discover -s tests -v`
 - Headless: `python3 -m chonoi.headless --mode gather|quan --seed 1 --ticks 600 --out out.jsonl`
-- Chơi thử trên trình duyệt: `python3 -m chonoi.live --mode gather|quan` (mở địa chỉ in ra; WASD, E, Space, R)
+- Vòng Ngày (v1.1): `python3 -m chonoi.headless --mode day --days 1 --seed 1 --ticks 30000 --out day.jsonl`
+- Chơi thử trên trình duyệt: `python3 -m chonoi.live --mode day` (hoặc `gather|quan`; mở địa chỉ in ra; WASD, E tương tác, Space bắt cá, Esc/P pause, R chơi lại, 1..n mua ở Shop, Enter đóng Shop, H tương phản cao)
 - Kiểm danh sách nhóm: `python3 tools/check_team.py`
 - Windows: test hộp đen gọi `headless_cmd` = `python3` → cần lệnh `python3` trong PATH (chép `python.exe` thành `python3.exe` vào một thư mục trong PATH, hoặc chạy trong WSL/Git Bash có python3). KHÔNG đổi `headless_cmd` trong contract (CI Ubuntu dùng `python3`). Đặt thêm `PYTHONUTF8=1` để stderr tiếng Việt không gây `UnicodeDecodeError` trong log test.
 
@@ -18,6 +19,7 @@
 - Lỗi đầu vào (contract/scenario/inputs/kho) → `raise BadInput` → mã thoát 2, trước khi ghi `--out`/`--inventory-out`.
 - (Phase 2) Kiểm số trong scenario bằng `_num` (chặn NaN/Infinity — `json.load` nhận chúng và làm JSONL hỏng). Bộ đếm có mức tối đa thì lấy mức đó từ tuning (`regrow_s`, `catch_cooldown_s`, `choke_interval_ticks`…), không viết số. Kiểm cần cả kho từ `--inventory` thì gọi từ `headless.py` sau `read_inventory` (ví dụ `check_reserved_fits`).
 
+- (Phase 2, v1.1) Giỏ/kho trong sim là cá thể `{id,kind,fresh}`; cấp id `I…` bằng `IdAllocator` dùng chung xuyên pha/Ngày. Luật chung ở `chonoi/sim/common.py`, vòng Ngày ở `chonoi/sim/day.py`. Đổi pha trong day ghi snapshot ép ở tick đó. Test day: `tests/test_p2_day.py`.
 - (Phase 3) Không được crash với đầu vào hỏng: mọi lỗi đọc/kiểu/giá trị → `BadInput` (mã 2), không bao giờ Traceback/mã 1. Bộ quét `tests/test_p3_robustness.py` — thêm trường mới thì thêm ca hỏng vào `CASES`. Đầu ra JSONL phải là JSON chuẩn (không NaN/Infinity).
 - (Phase 4) Trước khi nộp/gắn tag: chạy `verify-phase` trên `main` sau merge (không chỉ trên nhánh), log vào `docs/proof/phase-N/`. Merge PR bằng **merge commit**, không squash (giữ tác giả + hash dẫn trong `docs/members/`). Commit chỉ tính khi handle tác giả có trong `TEAM.md` → kiểm `git shortlog -sn` với `TEAM.md`.
 

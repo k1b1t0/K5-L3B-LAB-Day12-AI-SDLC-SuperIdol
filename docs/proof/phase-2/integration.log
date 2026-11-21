@@ -1,0 +1,12 @@
+$ gather: hold [ca_linh,ca_loc,bong_sung], interact frame 0 (cập bến) --inventory-out inv.json
+exit 0
+--- gather_end:
+{"type":"event","tick":1,"phase":"gather","name":"gather_end","data":{"reason":"docked","inventory":{"items":{"bong_sung":1,"ca_linh":1,"ca_loc":1}}}}
+--- inv.json:
+{"items":{"bong_sung":1,"ca_linh":1,"ca_loc":1}}
+
+$ quan --inventory inv.json --ticks 0
+exit 0
+--- snapshot tick 0 (stock):
+0 {'bong_sung': 1, 'ca_linh': 1, 'ca_loc': 1}
+stock tick 0 == inv.items: KHỚP

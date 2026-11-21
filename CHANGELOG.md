@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Phase 2] - 2026-11-21 — Test Contract v1.1
+
+### Changed (breaking)
+- `game.contract.json` lên `contract_version:"1.1"`: tuning chuẩn, 6 nguyên liệu, 6 món, `day_plan` D1–D5, `shop`, cá bơi/sinh, Cá Sấu, Máu.
+- Giỏ/kho trong sim là cá thể `{id, kind, fresh}` (file kho vẫn dạng đếm ở v1.1); payload món `{order_id, dish_id, base_price}`; `tip = floor(base_price × tip_rate)`.
+- `paid.data` có `base_price, tip, amount, reason`.
+
+### Added
+- `--mode day` (`chonoi/sim/day.py`): vòng gather → quan → shop, `--days`, Shop mua `oxygen`/`hp`, áp cấp từ Ngày kế, `days_complete`.
+- Pause theo cạnh ở mọi mode; 2 bếp / 4 bàn; đóng ca `closing`.
+- Live client: menu chính, intro Ngày/tối, HUD Máu/oxy/thủy quái, Shop, tổng kết, tương phản cao `[H]`.
+- Test `tests/test_p2_day.py` (15 test), ca v1.1 trong `test_p3_robustness`, `test_scenario_validation`.
+
+### Cập nhật fixture
+- Scenario quán: đơn đã giữ chỗ phải có `stock` thật; `dish` trên bếp/tay dùng `dish_id`, `base_price`.
+
 ## [Phase 1] - 2026-11-21
 
 ### Added

@@ -23,7 +23,7 @@ class TestGatherSlice2(unittest.TestCase):
         evs = s.step(inp)
         names = [r["name"] for r in evs]
         self.assertIn("gather", names)
-        self.assertEqual(s.sim.hold, ["bong_dien_dien"])
+        self.assertEqual(s.sim.hold_out(), ["bong_dien_dien"])  # v1.1: hold giữ cá thể
         self.assertGreater(s.sim.nodes[0]["regrow_ticks"], 0)
 
     def test_gather_hold_full(self):
@@ -56,7 +56,7 @@ class TestGatherSlice2(unittest.TestCase):
         names = [r["name"] for r in evs]
         self.assertIn("fish_caught", names)
         # ca_linh yield 3
-        self.assertEqual(s.sim.hold, ["ca_linh", "ca_linh", "ca_linh"])
+        self.assertEqual(s.sim.hold_out(), ["ca_linh", "ca_linh", "ca_linh"])
         self.assertEqual(len(s.sim.fish), 0)
         self.assertGreater(s.sim.catch_cd_ticks, 0)
 

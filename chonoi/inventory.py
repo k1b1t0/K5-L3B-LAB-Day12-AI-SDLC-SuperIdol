@@ -1,7 +1,7 @@
-"""File kho v1.0 (Contract G): {"items": {id: số nguyên >= 0}}.
+"""File kho (Contract G, v1.1): {"items": {kind: số nguyên >= 0}}.
 
-Đọc: từ chối sai schema / id lạ / số âm (BadInput -> mã 2).
-Ghi: bỏ mục bằng 0, qua file tạm cùng thư mục rồi thay thế, byte-ổn-định.
+Đọc: từ chối sai schema / kind lạ / số âm (BadInput -> mã 2).
+Ghi: bỏ mục bằng 0, qua file tạm cùng thư mục rồi thay thế nguyên tử, byte-ổn-định.
 """
 
 import json
@@ -10,10 +10,12 @@ import tempfile
 
 from .errors import BadInput
 
-KINDS_P1 = ("ca_loc", "ca_linh", "bong_dien_dien", "bong_sung")
+# 6 nguyên liệu (v1.1): thêm cá kèo và kèo nèo
+KINDS = ("ca_loc", "ca_linh", "ca_keo", "bong_dien_dien", "bong_sung", "keo_neo")
+KINDS_P1 = KINDS  # tên cũ, giữ cho mã gọi cũ
 
 
-def validate_items(items, kinds=KINDS_P1):
+def validate_items(items, kinds=KINDS):
     if not isinstance(items, dict):
         raise BadInput("items phải là object")
     out = {}
@@ -27,7 +29,7 @@ def validate_items(items, kinds=KINDS_P1):
     return out
 
 
-def read_inventory(path: str, kinds=KINDS_P1) -> dict:
+def read_inventory(path: str, kinds=KINDS) -> dict:
     try:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
@@ -38,21 +40,24 @@ def read_inventory(path: str, kinds=KINDS_P1) -> dict:
     return validate_items(data["items"], kinds)
 
 
-def hold_to_items(hold: list) -> dict:
-    """Khoang (mảng id theo thứ tự nhặt) -> object đếm, sắp theo id nguyên liệu."""
+def count_kinds(kinds_list) -> dict:
+    """Mảng kind -> object đếm, sắp theo kind, bỏ mục 0."""
     counts = {}
-    for k in hold:
+    for k in kinds_list:
         counts[k] = counts.get(k, 0) + 1
     return {k: counts[k] for k in sorted(counts)}
 
 
-def write_inventory(path: str, items: dict):
-    items = {k: items[k] for k in sorted(items) if items[k] > 0}
+hold_to_items = count_kinds
+
+
+def write_inventory(path: str, payload: dict):
+    """Ghi {"items": ...} qua file tạm cùng thư mục rồi thay thế nguyên tử."""
     d = os.path.dirname(os.path.abspath(path))
     fd, tmp = tempfile.mkstemp(prefix=".inv-", suffix=".tmp", dir=d)
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
-            json.dump({"items": items}, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
         os.replace(tmp, path)
     except BaseException:

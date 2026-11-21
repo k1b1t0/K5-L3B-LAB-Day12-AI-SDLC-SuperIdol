@@ -1,0 +1,14 @@
+$ scenario:
+{"day":{"money":500,"earned":500},"gather":{"time_left_ticks":10},"quan":{"time_left_ticks":10}}
+$ inputs:
+{"frames":[{"tick":20,"buy":"oxygen"},{"tick":21,"buy":"hp"},{"tick":22,"shop_done":true}]}
+exit 0
+{"type":"event","tick":0,"phase":"gather","day":1,"name":"day_start","data":{}}
+{"type":"event","tick":21,"phase":"shop","day":1,"name":"bought","data":{"upgrade":"oxygen","level":1,"price":200,"money":300}}
+{"type":"event","tick":22,"phase":"shop","day":1,"name":"bought","data":{"upgrade":"hp","level":1,"price":250,"money":50}}
+{"type":"event","tick":23,"phase":"shop","day":1,"name":"shop_end","data":{"reason":"done"}}
+{"type":"event","tick":23,"phase":"gather","day":2,"name":"day_start","data":{}}
+{"type":"event","tick":643,"phase":"shop","day":2,"name":"shop_end","data":{"reason":"time"}}
+day 1 active_upgrades {} oxygen_max_ticks 1800 hp_max 3 money 500
+day 2 active_upgrades {'hp': 1, 'oxygen': 1} oxygen_max_ticks 2700 hp_max 4 money 50
+{"type":"end","ticks":643,"sim_tick":643,"mode":"day","state":"finished","reason":"days_complete","money":50,"earned":500,"reputation":3.0,"score":800,"days_completed":2}

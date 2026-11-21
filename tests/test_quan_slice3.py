@@ -47,6 +47,7 @@ class TestQuanSlice3(unittest.TestCase):
     def test_customer_patience_and_leaves(self):
         """Khách hết kiên nhẫn thì bỏ đi (customer_left) và trừ uy tín."""
         sc = {
+            "stock": {"ca_loc": 1},  # v1.1: đơn reserved phải giữ chỗ được trong kho thật
             "customers": [{
                 "id": "C1",
                 "table_id": "T1",
