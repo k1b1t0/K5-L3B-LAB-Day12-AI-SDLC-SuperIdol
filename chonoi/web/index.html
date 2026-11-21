@@ -253,6 +253,7 @@ function handleEvent(e) {
     sfxChoke();
     addFloatText(`🐊 Cá Sấu cắn! -1 Máu${(data.lost || []).length ? ", rơi " + data.lost.length + " món" : ""}`, cx, cy - 40, "#ce93d8");
   } else if (name === "faint") { sfxChoke(); addFloatText("😵 Ngất! Mất cả giỏ", cx, cy - 60, "#ff1744"); }
+  else if (name === "spoiled") addFloatText(`🤢 ${KIND_NAME[data.kind] || data.kind} bị ươn!`, cx, cy - 70, "#ff8a80");
   else if (name === "dish_ready") { sfxDing(); addFloatText("🔔 Món đã chín!", cx, cy - 20, "#69f0ae"); }
   else if (name === "served") {
     sfxCatch(); addFloatText("🍲 Đã phục vụ khách", cx, cy - 20, "#e040fb");
@@ -363,6 +364,18 @@ function dim(w, h) { ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(0, 0, w, h)
 function kindList(m) {
   return Object.keys(m || {}).sort().map((k) => (KIND_NAME[k] || k) + " ×" + m[k]).join(", ") || "(không có)";
 }
+// v1.2: kho cá thể {id, kind, fresh}; ươn khi fresh < spoiled_below (đọc từ meta.freshness)
+const spoiledBelow = () => ((snap.meta || {}).freshness || {}).spoiled_below ?? 30;
+const isSpoiled = (it) => it.fresh < spoiledBelow();
+function countOf(items, usableOnly) {
+  const m = {}; (items || []).forEach((it) => { if (!usableOnly || !isSpoiled(it)) m[it.kind] = (m[it.kind] || 0) + 1; });
+  return m;
+}
+function freshInfo(items) {
+  const n = (items || []).length, bad = (items || []).filter(isSpoiled).length;
+  const avg = n ? (items || []).reduce((a, it) => a + it.fresh, 0) / n : 0;
+  return n ? `tươi TB ${avg.toFixed(0)}%${bad ? " · ươn " + bad : ""}` : "";
+}
 function cookable(menu, stock, only) {
   return Object.keys(menu || {}).filter((d) => !only || d in only).filter((d) =>
     Object.entries(menu[d].recipe).every(([k, n]) => (stock[k] || 0) >= n));
@@ -406,11 +419,11 @@ function overlay(w, h) {
       text("Cần lấy: " + kindList(plan.ingredients), x + 30, y + 160, { color: "#a5d6a7" });
       text("Nhấn phím bất kỳ để bắt đầu", w / 2, y + 226, { align: "center", color: "#90a4ae" });
     } else if (intro.kind === "evening") {
-      const stock = snap.stock || {};
+      const stock = countOf(snap.stock, true);
       const ok = cookable(snap.menu, stock, snap.day_plan && snap.day_plan.dishes);
       const [x, y] = panel(w, h, 620, 240, "#ff7043");
       text("🌙 BUỔI TỐI — MỞ QUÁN", w / 2, y + 46, { align: "center", size: 24, bold: true, color: "#ffab91" });
-      text("Nhập kho: " + kindList(stock), x + 30, y + 96);
+      text("Nhập kho: " + kindList(stock) + "  (" + (freshInfo(snap.stock) || "trống") + ")", x + 30, y + 96);
       text("Nấu được: " + (ok.map((d) => DISH_NAME[d] || d).join(", ") || "không món nào"), x + 30, y + 136, { color: "#a5d6a7" });
       text("Nhấn phím bất kỳ để mở quán", w / 2, y + 206, { align: "center", color: "#90a4ae" });
     } else {
@@ -658,7 +671,7 @@ function drawGather(w, h) {
   if (snap.day) text(`Ngày ${snap.day} · Tiền ${snap.money}k · Uy tín ${(snap.reputation ?? 0).toFixed(1)}`, 500, 28, { bold: true, color: "#ffd54f" });
   // Danh sách cần lấy (đã lấy / cần)
   if (snap.day_plan && snap.day_plan.ingredients) {
-    const have = {}; (snap.hold || []).forEach((k) => (have[k] = (have[k] || 0) + 1));
+    const have = {}; (snap.hold || []).forEach((it) => (have[it.kind] = (have[it.kind] || 0) + 1));
     const need = snap.day_plan.ingredients, kinds = Object.keys(need).sort();
     const x0 = w - 260, y0 = 74;
     ctx.fillStyle = "rgba(10,16,22,.7)"; ctx.fillRect(x0, y0, 246, 34 + kinds.length * 24);
@@ -678,13 +691,19 @@ function drawGather(w, h) {
       const x0 = 14 + i * (sz + 4);
       ctx.fillStyle = "rgba(255,255,255,.1)"; ctx.fillRect(x0, y0, sz, sz);
       ctx.strokeStyle = "rgba(255,255,255,.3)"; ctx.strokeRect(x0, y0, sz, sz);
-      if (snap.hold[i]) {
-        ctx.fillStyle = kc(snap.hold[i]); ctx.fillRect(x0 + 3, y0 + 3, sz - 6, sz - 6);
+      const it = snap.hold[i];
+      if (it) {
+        ctx.fillStyle = kc(it.kind); ctx.fillRect(x0 + 3, y0 + 3, sz - 6, sz - 6);
+        // vạch độ tươi dưới ô; ươn: vạch đỏ + dấu ✕
+        const f = Math.max(0, Math.min(1, it.fresh / 100)), bad = isSpoiled(it);
+        ctx.fillStyle = bad ? "#ff1744" : f < 0.5 ? "#ffa726" : "#69f0ae"; ctx.fillRect(x0, y0 + sz - 3, sz * f, 3);
+        if (bad) text("✕", x0 + sz / 2, y0 + sz / 2 + 5, { size: 14, align: "center", color: "#ff1744", bold: true });
       }
     }
-    const names = {}; snap.hold.forEach((k) => (names[k] = (names[k] || 0) + 1));
+    const names = countOf(snap.hold);
     const invStr = Object.keys(names).map((k) => (KIND_NAME[k] || k) + "×" + names[k]).join(", ");
-    text(`🧺 Giỏ LIFO (${snap.hold.length}/${cap}): ${invStr || "(trống)"}`, 14, y0 + sz + 15, { size: 12, color: "#eceff1", bold: true });
+    const fi = freshInfo(snap.hold);
+    text(`🧺 Giỏ LIFO (${snap.hold.length}/${cap}): ${invStr || "(trống)"}${fi ? " · " + fi : ""}`, 14, y0 + sz + 15, { size: 12, color: "#eceff1", bold: true });
   }
   text("WASD bơi · E hái/cập bến · Space bắt cá · Esc tạm dừng", w - 14, 56, { size: 12, align: "right", color: "#90a4ae" });
 }
@@ -787,11 +806,11 @@ function drawQuan(w, h) {
   }
 
   // BẢNG THỰC ĐƠN & KHO KHẢ DỤNG Ở GÓC PHẢI (đọc menu từ dữ liệu, day: chỉ món trong kế hoạch)
-  const menu = snap.menu || {}, avail = snap.available || snap.stock || {};
+  const menu = snap.menu || {}, avail = snap.available || countOf(snap.stock, true);
   const only = snap.day_plan && snap.day_plan.dishes;
   const dishes = Object.keys(menu).filter((d) => !only || d in only);
   const ok = new Set(cookable(menu, avail, only));
-  const hudX = w - 330, ph = 70 + dishes.length * 50 + 40 + Math.max(1, Object.keys(avail).length) * 24;
+  const hudX = w - 330, ph = 70 + dishes.length * 50 + 40 + Math.max(1, Object.keys(avail).length) * 24 + 24;
   ctx.fillStyle = "rgba(20, 28, 38, 0.88)"; ctx.fillRect(hudX, top, 316, ph);
   ctx.strokeStyle = "#4fc3f7"; ctx.lineWidth = 1; ctx.strokeRect(hudX, top, 316, ph);
   text("📜 THỰC ĐƠN", hudX + 158, top + 28, { bold: true, align: "center", color: "#81d4fa" });
@@ -807,6 +826,8 @@ function drawQuan(w, h) {
   const ak = Object.keys(avail).sort();
   if (!ak.length) text("Kho rỗng", hudX + 14, ky + 26, { color: "#cfd8dc" });
   ak.forEach((k, i) => text(`${KIND_NAME[k] || k}: ${avail[k]}`, hudX + 14, ky + 26 + i * 24, { color: "#cfd8dc" }));
+  const sfi = freshInfo(snap.stock);
+  if (sfi) text("Kho thô: " + sfi, hudX + 14, ky + 26 + Math.max(1, ak.length) * 24, { color: (snap.stock || []).some(isSpoiled) ? "#ff8a80" : "#a5d6a7" });
 
   // HUD Top Bar
   text("⏱ " + fmtTime(snap.time_left_ticks), 14, 28, { size: 20, bold: true, color: snap.time_left_ticks <= 1800 ? "#ff5252" : undefined });
