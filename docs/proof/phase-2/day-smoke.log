@@ -1,0 +1,19 @@
+$ day --seed 1 --days 1 --ticks 30000 --snapshot-every 3600
+exit 0
+{"type":"event","tick":0,"phase":"gather","day":1,"name":"day_start","data":{}}
+{"type":"event","tick":0,"phase":"gather","day":1,"name":"day_plan","data":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"ingredients":{"ca_loc":3,"bong_sung":6}}}
+{"type":"event","tick":0,"phase":"gather","day":1,"name":"phase_start","data":{}}
+{"type":"snapshot","tick":0,"sim_tick":0,"mode":"day","phase":"gather","phase_tick":0,"state":"playing","time_left_ticks":10800,"money":0,"earned":0,"reputation":3.0,"score":300,"day":1,"day_plan":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"ingredient
+{"type":"snapshot","tick":3600,"sim_tick":3600,"mode":"day","phase":"gather","phase_tick":3600,"state":"playing","time_left_ticks":7200,"money":0,"earned":0,"reputation":3.0,"score":300,"day":1,"day_plan":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"in
+{"type":"snapshot","tick":7200,"sim_tick":7200,"mode":"day","phase":"gather","phase_tick":7200,"state":"playing","time_left_ticks":3600,"money":0,"earned":0,"reputation":3.0,"score":300,"day":1,"day_plan":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"in
+{"type":"event","tick":10800,"phase":"gather","day":1,"name":"gather_end","data":{"reason":"time","inventory":{"items":{}}}}
+{"type":"event","tick":10800,"phase":"quan","day":1,"name":"phase_start","data":{}}
+{"type":"snapshot","tick":10800,"sim_tick":10800,"mode":"day","phase":"quan","phase_tick":0,"state":"playing","time_left_ticks":10800,"money":0,"earned":0,"reputation":3.0,"score":300,"day":1,"day_plan":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"ingr
+{"type":"snapshot","tick":14400,"sim_tick":14400,"mode":"day","phase":"quan","phase_tick":3600,"state":"playing","time_left_ticks":7200,"money":0,"earned":0,"reputation":3.0,"score":300,"day":1,"day_plan":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"in
+{"type":"snapshot","tick":18000,"sim_tick":18000,"mode":"day","phase":"quan","phase_tick":7200,"state":"playing","time_left_ticks":3600,"money":0,"earned":0,"reputation":3.0,"score":300,"day":1,"day_plan":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"in
+{"type":"event","tick":21600,"phase":"quan","day":1,"name":"quan_end","data":{"reason":"time","money":0,"earned":0,"shift_earned":0,"reputation":3.0}}
+{"type":"event","tick":21600,"phase":"shop","day":1,"name":"phase_start","data":{}}
+{"type":"snapshot","tick":21600,"sim_tick":21600,"mode":"day","phase":"shop","phase_tick":0,"state":"playing","time_left_ticks":600,"money":0,"earned":0,"reputation":3.0,"score":300,"day":1,"day_plan":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"ingred
+{"type":"event","tick":22200,"phase":"shop","day":1,"name":"shop_end","data":{"reason":"time"}}
+{"type":"snapshot","tick":22200,"sim_tick":22200,"mode":"day","phase":"shop","phase_tick":600,"state":"finished","time_left_ticks":0,"money":0,"earned":0,"reputation":3.0,"score":300,"day":1,"day_plan":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"ingre
+{"type":"end","ticks":22200,"sim_tick":22200,"mode":"day","state":"finished","reason":"days_complete","money":0,"earned":0,"reputation":3.0,"score":300,"days_completed":1}
