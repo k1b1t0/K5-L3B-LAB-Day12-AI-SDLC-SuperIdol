@@ -85,7 +85,8 @@ test_too_few_members (test_team_check.TeamCheck) ... ok
 test_wrong_size_duplicate_and_outsider (test_team_check.TeamCheck) ... ok
 
 ----------------------------------------------------------------------
-Ran 71 tests in 20.423s
+Ran 71 tests in 26.937s
 
 OK
+
 exit 0

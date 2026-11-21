@@ -31,3 +31,7 @@ Bằng chứng tạo bằng lệnh thật trên Windows + Git Bash (Python 3.10,
 ## Đánh giá ngắn
 - Đạt toàn bộ AC lõi; không làm mở rộng (Chợ Chú Sáu, đặt bàn trước) — nhóm 4 người không bắt buộc.
 - HUD chỉ kiểm tay. Dung sai ±0.01 chỉ áp cho JSONL; file kho giữ đủ chính xác.
+
+## Kiểm lại trước release v1.0.0 (2026-11-21)
+
+Checkout sạch commit main f1ccf22166fc8edc78e216a6e97020701937ff2b: 84 unittest đạt, check_team đạt, gather/quan seed=1 ticks=3600 giống từng byte. Xem [metadata](../proof/phase-3/release-recheck.json), [unittest](../proof/phase-3/unittest.log), [tất định](../proof/phase-3/determinism.log). Các nhận xét trạng thái nhánh/TEAM cũ phía trên là lịch sử, không phải trạng thái release hiện tại.

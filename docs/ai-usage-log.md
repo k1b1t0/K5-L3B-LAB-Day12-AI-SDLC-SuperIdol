@@ -1,7 +1,10 @@
 # Nhật ký dùng AI (theo phase và theo người)
 
+> Đính chính P4: dòng Claude Code bên dưới là lịch sử hồi quy contract 1.0, không phải bằng chứng kiểm contract 1.3. Bằng chứng release hiện tại ở `docs/proof/phase-4/` kèm `environment.json`.
+
 | Phase | Người | Công cụ / model | Việc | Token / chi phí ước tính | Ghi chú (AI sai ở đâu?) |
 |---|---|---|---|---|---|
+| Phase 4 | C (haianh020505) | Codex | Đối chiếu HANDOFF-C với Git; hoàn thiện hồ sơ release, chạy 92 unittest, headless tất định, soak/bench thật; kiểm lại ảnh cảnh báo và clone sạch | không đo | Phát hiện ma trận/log P4 cũ vẫn ghi contract 1.0 và placeholder thành viên; thay bằng bằng chứng chạy thật, không lấy kết quả cũ làm kết quả release. |
 | Phase 1 | Duc | Claude 3.5 Sonnet / Antigravity | Sinh khung hàm xử lý oxy, lặn ngoi và va chạm giỏ | ~25,000 | AI quên kiểm tra `_in_dock` trước khi hái và bỏ qua kiểm tra sức chứa khi nhặt nút. |
 | Phase 1 | Nam | Claude 3.5 Sonnet / Antigravity | Viết logic đặt chỗ nguyên liệu và vòng đời khách ăn | ~30,000 | AI tính sai nguyên liệu khả dụng khi khách gọi món trùng nhau; quên trừ `reserved`. |
 | Phase 1 | C | Claude 3.5 Sonnet | Soạn 2 skills AI và kịch bản test kiểm tra determinism | ~20,000 | AI sinh lệnh test có đường dẫn Linux bash không chạy trực tiếp được trên shell Windows. |

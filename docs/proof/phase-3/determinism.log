@@ -1,3 +1,3 @@
-gather seed=1 ticks=3600: GIỐNG từng byte
-quan seed=1 ticks=3600: GIỐNG từng byte
-day seed=1 ticks=3600: GIỐNG từng byte
+gather seed=1 ticks=3600: identical bytes; sha256=dd166b56a1f0fa694a9bee05314b3ed2990a2cb75103ce83bf4792b9a161943c
+quan seed=1 ticks=3600: identical bytes; sha256=1f2cb3bf7fa19127174f5b6700c0541d997eee82ed4615a5697f6336a9cc86b1
+exit 0

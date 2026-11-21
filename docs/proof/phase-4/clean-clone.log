@@ -1,0 +1,6 @@
+Cloning into 'C:\Users\lehai\AppData\Local\Temp\chonoi-clean-odev7_vb\repo'...
+
+clean clone HEAD=359abab275c049563832fd247e8085a5d6a70fb5
+Three quick-start commands: git clone URL; cd repo; python3 -m chonoi.live --mode day
+GET /: HTTP 200; Canvas client present; no pip install; standard library only
+exit 0; source phase4-v1.3 before final documentation commit; retest main after merge

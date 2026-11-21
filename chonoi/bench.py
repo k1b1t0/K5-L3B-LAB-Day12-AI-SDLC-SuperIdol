@@ -99,20 +99,25 @@ def main(argv=None) -> int:
            "--no-first-run", "--no-default-browser-check", "--mute-audio", "--disable-extensions",
            "--disable-background-timer-throttling", "--disable-renderer-backgrounding",
            "--disable-backgrounding-occluded-windows", url]
-    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    proc = None
     try:
+        proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not game.bench_done.wait(WARMUP_S + a.duration + 60):
             sys.stderr.write("hết giờ chờ số đo từ trình duyệt\n")
             return 1
         r = game.bench_result
         out = metrics(r.get("frames"), r.get("measured_s"), r.get("slowest_s") or [],
                       r.get("first_frame_epoch_ms"), T0_EPOCH_MS)
+    except OSError as e:
+        sys.stderr.write(f"không khởi chạy được trình duyệt: {e}\n")
+        return 1
     except (TypeError, ValueError) as e:
         sys.stderr.write(f"số đo sai: {e}\n")
         return 1
     finally:
-        proc.kill()
-        proc.wait(timeout=10)
+        if proc is not None:
+            proc.kill()
+            proc.wait(timeout=10)
         server.stop()
         shutil.rmtree(profile, ignore_errors=True)
     with open(a.out, "w", encoding="utf-8", newline="\n") as f:

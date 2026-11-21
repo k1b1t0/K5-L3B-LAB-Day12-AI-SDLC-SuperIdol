@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Phase 4] — v1.0.0 — 2026-11-21
+
+### Added
+- Test Contract 1.3: `bench_cmd`, `soak_cmd`; giữ gameplay và schema kho của 1.2.
+- Benchmark Chrome/Chromium/Edge headless 1280×720, warmup 3 giây; xuất avg FPS, 1% low, số khung, thời gian đo và thời gian tải.
+- Bot soak tất định chạy nhiều Ngày, báo số Ngày hoàn thành, crash và kết quả từng Ngày.
+- `warn()` hiển thị cảnh báo oxy, thủy quái và khách sắp giận bằng chữ/ký hiệu; hỗ trợ tương phản cao.
+- Test release, proof Phase 4, hướng dẫn bắt đầu nhanh, MIT LICENSE và release notes.
+
+### Fixed
+- Bench xử lý lỗi khởi chạy trình duyệt gọn, dọn server/profile và không tạo output giả; thêm test đường dẫn trình duyệt sai.
+
+
 ## [Phase 3] - 2026-11-21 — Test Contract v1.2
 
 ### Changed (breaking)

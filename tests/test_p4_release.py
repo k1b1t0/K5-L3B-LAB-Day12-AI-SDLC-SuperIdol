@@ -51,6 +51,17 @@ class BenchMetrics(unittest.TestCase):
                      ["--seed", "x", "--duration", "5", "--out", "x.json"]):
             self.assertEqual(run_mod("chonoi.bench", *args)[0], 2, args)
 
+    def test_missing_browser_fails_cleanly_without_output(self):
+        with Workdir() as w:
+            out = w.path("bench.json")
+            p = subprocess.run([sys.executable, "-m", "chonoi.bench", "--seed", "42",
+                                "--duration", "1", "--out", out], cwd=ROOT, capture_output=True,
+                               text=True, encoding="utf-8", timeout=30,
+                               env=dict(os.environ, PYTHONUTF8="1", CHONOI_BROWSER=w.path("missing-browser.exe")))
+            self.assertEqual(p.returncode, 1)
+            self.assertNotIn("Traceback", p.stderr)
+            self.assertFalse(os.path.exists(out))
+
 
 class Soak(unittest.TestCase):
     def _soak(self, w, name, days="2"):

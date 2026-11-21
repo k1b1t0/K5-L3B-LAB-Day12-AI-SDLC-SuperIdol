@@ -15,11 +15,42 @@ Cách làm việc kỹ thuật là **tự do** (push thẳng, nhánh + PR, pair,
 
 ## Bắt đầu nhanh
 
+Yêu cầu **Python 3.10+**; game/test chỉ dùng thư viện chuẩn, không cần `pip install`.
+Từ clone sạch, chạy ba lệnh sau (lệnh mở game in địa chỉ để mở trong trình duyệt):
+
 ```bash
-git clone <fork-của-nhóm> && cd <fork-của-nhóm>
-PYTHONPATH=tests:. python3 -m unittest discover -s tests -v        # smoke test
-python3 -m chonoi.live --mode day                                   # chơi trọn vòng Ngày trên trình duyệt (v1.1)
+git clone https://github.com/k1b1t0/K5-L3B-LAB-Day12-AI-SDLC-SuperIdol.git
+cd K5-L3B-LAB-Day12-AI-SDLC-SuperIdol
+python3 -m chonoi.live --mode day
 ```
+
+Windows: nếu chỉ có `python`, có thể dùng `python` thay `python3` để chơi/bench/soak.
+Test hộp đen vẫn gọi `python3` theo contract: cần cài Python với PATH có `python3.exe`
+(có thể sao chép `python.exe` thành `python3.exe` ngay trong thư mục cài Python).
+PowerShell chạy test bằng:
+
+```powershell
+$env:PYTHONUTF8='1'
+$env:PYTHONPATH='tests;.'
+python3 -m unittest discover -s tests -v
+```
+
+Linux/macOS: `PYTHONUTF8=1 PYTHONPATH=tests:. python3 -m unittest discover -s tests -v`.
+
+Điều khiển: **WASD** di chuyển; **E** tương tác; **Space** bắt cá; **Esc/P** pause;
+**R** chơi lại; **1..n** mua ở Shop; **Enter** đóng Shop; **H** tương phản cao; **M** bật/tắt tiếng.
+
+```bash
+python3 -m chonoi.headless --mode gather --seed 1 --ticks 600 --out out.jsonl
+python3 -m chonoi.headless --mode day --days 1 --seed 1 --ticks 30000 --out day.jsonl
+python3 -m chonoi.bench --seed 42 --duration 30 --out bench.json
+python3 -m chonoi.soak --seed 7 --days 10 --out soak.json
+```
+
+Bench cần **Chrome, Chromium hoặc Edge**; nếu không tự dò được, đặt `CHONOI_BROWSER`
+bằng đường dẫn file thực thi trình duyệt. Bench đo ở 1280×720 sau 3 giây làm nóng.
+Xem [release notes](docs/release-notes-v1.0.0.md), [kiểm chứng Phase 4](docs/verification/phase-4.md)
+và [MIT License](LICENSE).
 
 Game cần chế độ **headless** theo Test Contract (`python3 -m chonoi.headless --mode gather|quan …`) để được chạy và chấm tự động. **Công nghệ không ràng buộc**: khung Python trong `chonoi/` chỉ là gợi ý, chi tiết ở [`docs/STARTER.md`](docs/STARTER.md).
 

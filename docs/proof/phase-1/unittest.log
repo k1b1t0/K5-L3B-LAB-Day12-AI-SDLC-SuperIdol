@@ -1,4 +1,3 @@
-# branch haianh @ c2ab8cb (+ working tree: test_p1_integration.py), Python 3.10.11, Windows, PYTHONUTF8=1
 test_choke_and_faint (test_gather_slice1.TestGatherSlice1)
 Hết oxy đủ choke_interval_ticks thì choke trừ HP, HP về 0 thì faint và giỏ rỗng. ... ok
 test_dive_and_surface_events (test_gather_slice1.TestGatherSlice1)
@@ -15,6 +14,11 @@ test_state_input_and_clean_stop (test_live.LiveServerTest) ... ok
 test_dock_checked_before_harvest (test_p1_integration.Phase1EndToEnd) ... ok
 test_gather_and_quan_deterministic_bytes (test_p1_integration.Phase1EndToEnd) ... ok
 test_gather_to_quan_full_service (test_p1_integration.Phase1EndToEnd) ... ok
+test_bad_exit_2_without_output (test_p2_validation.Phase2Validation) ... ok
+test_reserved_over_inventory_file_exit_2 (test_p2_validation.Phase2Validation) ... ok
+test_valid_edges_still_run (test_p2_validation.Phase2Validation) ... ok
+test_malformed_inputs_exit_2_no_crash (test_p3_robustness.Phase3Robustness) ... ok
+test_outputs_are_strict_json (test_p3_robustness.Phase3Robustness) ... ok
 test_bad_frames_raise (test_python_starter_units.Units) ... ok
 test_catch_is_a_v10_button_and_attack_is_not (test_python_starter_units.Units) ... ok
 test_id_allocator_continues_after_max (test_python_starter_units.Units) ... ok
@@ -66,7 +70,8 @@ test_too_few_members (test_team_check.TeamCheck) ... ok
 test_wrong_size_duplicate_and_outsider (test_team_check.TeamCheck) ... ok
 
 ----------------------------------------------------------------------
-Ran 51 tests in 11.462s
+Ran 56 tests in 49.014s
 
 OK
+
 exit 0

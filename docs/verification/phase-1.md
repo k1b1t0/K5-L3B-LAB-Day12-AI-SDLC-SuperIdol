@@ -33,3 +33,7 @@ Bằng chứng chạy trên nhánh `haianh` (Windows, Python 3.10, `PYTHONUTF8=1
 - Điều cần chỉnh cho phase sau:
   - PO chép mục D và danh sách AC của PRD vào `docs/clarify.md` ngay đầu phase để QA đặt đúng mã AC.
   - Trên Windows chạy test với `python3` trong PATH và `PYTHONUTF8=1` (nếu không, stderr tiếng Việt gây `UnicodeDecodeError` trong log dù test vẫn pass).
+
+## Kiểm lại trước release v1.0.0 (2026-11-21)
+
+Checkout sạch commit main babdad10e547385debd55b039ba3b85e81fdba58: 56 unittest đạt, check_team đạt, gather/quan seed=1 ticks=3600 giống từng byte. Xem [metadata](../proof/phase-1/release-recheck.json), [unittest](../proof/phase-1/unittest.log), [tất định](../proof/phase-1/determinism.log). Các nhận xét trạng thái nhánh/TEAM cũ phía trên là lịch sử, không phải trạng thái release hiện tại.
