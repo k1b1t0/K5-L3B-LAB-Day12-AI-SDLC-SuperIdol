@@ -4,6 +4,7 @@ import json
 import os
 
 from .errors import BadInput
+from .inventory import KINDS_P1
 
 DEFAULT_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "game.contract.json")
 
@@ -136,8 +137,32 @@ def validate_tuning(t):
         raise BadInput("quan.tip_reputation phải > 0")
     if q.get("burn_s") is not None:
         raise BadInput("burn_s phải là null ở Phase 1")
-    # TODO(nhóm): bổ sung kiểm các khóa còn lại nếu muốn chặt hơn (bếp/bàn, uy tín, ...).
+    qb = q["bounds"]
+    _pos_in("quan.start_pos", q.get("start_pos"), qb, ("x", "z"))
+    for name in ("stoves", "tables"):
+        arr = q.get(name)
+        if not isinstance(arr, list) or not arr:
+            raise BadInput(f"tuning.quan.{name} phải là mảng không rỗng")
+        seen = set()
+        for e in arr:
+            if not isinstance(e, dict) or not isinstance(e.get("id"), str) or not e["id"] or e["id"] in seen:
+                raise BadInput(f"tuning.quan.{name}: mỗi phần tử cần id duy nhất (chuỗi khác rỗng)")
+            seen.add(e["id"])
+            _pos_in(f"quan.{name}.{e['id']}.pos", e.get("pos"), qb, ("x", "z"))
+    _int_between("quan.carry_limit", q.get("carry_limit"), 1, 99)
+    rmin, rmax = q.get("reputation_min"), q.get("reputation_max")
+    if not (_num(rmin) and _num(rmax) and rmin < rmax):
+        raise BadInput("tuning.quan.reputation_min phải < reputation_max")
+    _between("quan.reputation_initial", q.get("reputation_initial"), rmin, rmax)
+    if not menu:
+        raise BadInput("tuning.menu không được rỗng")
     for dish_id, d in menu.items():
         price, cook = d.get("price"), d.get("cook_s")
         if isinstance(price, bool) or not isinstance(price, int) or price <= 0 or not _num(cook) or cook <= 0:
             raise BadInput(f"menu.{dish_id}: price (nguyên) và cook_s phải > 0")
+        recipe = d.get("recipe")
+        if not isinstance(recipe, dict) or not recipe:
+            raise BadInput(f"menu.{dish_id}.recipe phải là object không rỗng")
+        for k, v in recipe.items():
+            if k not in KINDS_P1 or isinstance(v, bool) or not isinstance(v, int) or v <= 0:
+                raise BadInput(f"menu.{dish_id}.recipe.{k}: nguyên liệu P1, số lượng nguyên > 0")
