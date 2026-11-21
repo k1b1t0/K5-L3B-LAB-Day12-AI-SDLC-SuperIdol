@@ -39,6 +39,28 @@ BAD_QUAN = {
                                                "reserved": {"thit_bo": 1}}]},
     "reserved số âm": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
                                       "reserved": {"ca_loc": -1}}]},
+    "hand món lạ": {"hand": "pho"},
+    "hand không phải id món": {"hand": {"dish_id": DISH}},
+    "khách ăn thiếu price/tip": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "state": "eating",
+                                                "eat_ticks_left": 100}]},
+    "khách ăn thiếu eat_ticks_left": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
+                                                     "state": "eating", "price": 60, "tip": 0}]},
+    "khách ăn tip âm": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "state": "eating",
+                                       "eat_ticks_left": 100, "price": 60, "tip": -1}]},
+    "giữ chỗ vượt kho": {"stock": {"ca_loc": 1},
+                         "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "reserved": {"ca_loc": 2}}]},
+    "giữ chỗ khi kho rỗng": {"stock": {},
+                             "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "reserved": {"ca_loc": 1}}]},
+    "đơn giao bếp idle": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "assigned_stove": "B1"}]},
+    "đơn giao bếp không tồn tại": {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH,
+                                                  "assigned_stove": "B9"}]},
+    "đơn giao bếp nấu món khác": {
+        "stoves": [{"id": "B1", "state": "cooking", "dish": "goi_bong_sung", "cook_ticks_left": 10}],
+        "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "assigned_stove": "B1"}]},
+    "khách đang ăn vẫn giữ bếp": {
+        "stoves": [{"id": "B1", "state": "ready", "dish": DISH}],
+        "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "state": "eating", "eat_ticks_left": 10,
+                       "price": 60, "tip": 0, "assigned_stove": "B1"}]},
 }
 
 GOOD_QUAN = {
@@ -74,6 +96,13 @@ class ScenarioQuanExit2(unittest.TestCase):
     def test_eating_customer_valid(self):
         block = {"customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "state": "eating",
                                 "eat_ticks_left": 600, "price": 60, "tip": 12}]}
+        self.assertEqual(self._run(block)[0], 0)
+
+    def test_assigned_order_and_hand_valid(self):
+        block = {"hand": DISH, "stock": {"ca_loc": 1},
+                 "stoves": [{"id": "B1", "state": "ready", "dish": DISH, "ready_ticks": 5}],
+                 "customers": [{"id": "C1", "table_id": "T1", "dish_id": DISH, "assigned_stove": "B1",
+                                "reserved": {}}]}
         self.assertEqual(self._run(block)[0], 0)
 
 

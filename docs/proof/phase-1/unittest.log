@@ -1,4 +1,4 @@
-# branch haianh @ a4b50cd (+ working tree: test_p1_integration.py), Python 3.10.11, Windows, PYTHONUTF8=1
+# branch haianh @ fd4efea (+ working tree: scenario.py, test_scenario_validation.py), Python 3.10.11, Windows, PYTHONUTF8=1
 test_choke_and_faint (test_gather_slice1.TestGatherSlice1)
 Hết oxy đủ choke_interval_ticks thì choke trừ HP, HP về 0 thì faint và giỏ rỗng. ... ok
 test_dive_and_surface_events (test_gather_slice1.TestGatherSlice1)
@@ -29,6 +29,7 @@ test_no_dish_when_stock_empty (test_quan_slice3.TestQuanSlice3)
 Kho rỗng không có món nấu được -> phát no_dish, khách không ngồi. ... ok
 test_full_service_cycle (test_quan_slice4.TestQuanSlice4)
 Khách chờ -> nấu tại bếp B1 -> chín -> bưng -> giao bàn T1 -> ăn -> trả tiền + tip. ... ok
+test_assigned_order_and_hand_valid (test_scenario_validation.ScenarioQuanExit2) ... ok
 test_bad_blocks_exit_2_without_output (test_scenario_validation.ScenarioQuanExit2) ... ok
 test_eating_customer_valid (test_scenario_validation.ScenarioQuanExit2) ... ok
 test_valid_block_runs (test_scenario_validation.ScenarioQuanExit2) ... ok
@@ -64,7 +65,7 @@ test_too_few_members (test_team_check.TeamCheck) ... ok
 test_wrong_size_duplicate_and_outsider (test_team_check.TeamCheck) ... ok
 
 ----------------------------------------------------------------------
-Ran 49 tests in 7.813s
+Ran 50 tests in 11.364s
 
 OK
 exit 0

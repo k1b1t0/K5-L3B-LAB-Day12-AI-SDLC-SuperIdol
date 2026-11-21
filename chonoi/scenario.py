@@ -1,10 +1,9 @@
 """Nạp và kiểm scenario (Contract D). Trả về dict của đúng khối theo mode.
 
 KHUNG: kiểm cú pháp, id trùng, bộ đếm âm, khoang vượt sức chứa, trường lạ.
-Quán (nhóm thêm): random_customers, reputation, trạng thái bếp nhất quán, khách (state, dish_id,
-patience/eat trong dải, reserved đúng schema).
-TODO(nhóm, chờ PRD-0 mục D): khách giữ chỗ quá kho, đơn assigned phải có đúng một món,
-khách eating thiếu giá/tip, định dạng `hand`.
+Quán (nhóm thêm): random_customers, reputation, hand, trạng thái bếp nhất quán, khách (state, dish_id,
+patience/eat trong dải, reserved đúng schema), khách eating phải có eat_ticks_left/price/tip,
+đơn assigned_stove khớp đúng một món ở bếp đang nấu/chín, tổng giữ chỗ không vượt quan.stock.
 """
 
 import json
@@ -171,8 +170,12 @@ def _validate_quan(b, tuning):
     if "reputation" in b and not (_num(b["reputation"])
                                   and q["reputation_min"] <= b["reputation"] <= q["reputation_max"]):
         raise BadInput(f"reputation phải trong [{q['reputation_min']}, {q['reputation_max']}]")
+    if b.get("hand") is not None and not (isinstance(b["hand"], str) and b["hand"] in menu):
+        raise BadInput("hand phải là null hoặc id món có trong menu")
     for s in b.get("stoves", []):
         _validate_stove(s, menu)
+    stoves = {s["id"]: s for s in b.get("stoves", [])}
+    assigned, reserved = set(), {}
     pmax = int(round(q["patience_s"] * 60))
     emax = int(round(q["eat_s"] * 60))
     for c in b.get("customers", []):
@@ -184,10 +187,28 @@ def _validate_quan(b, tuning):
             raise BadInput(f"{name}.dish_id phải là món có trong menu")
         if state == "waiting" and "patience_ticks_left" in c:
             _int_in(f"{name}.patience_ticks_left", c["patience_ticks_left"], 1, pmax)
-        if state == "eating" and "eat_ticks_left" in c:
+        if state == "eating":
+            if not {"eat_ticks_left", "price", "tip"} <= set(c):
+                raise BadInput(f"{name}: khách đang ăn phải có eat_ticks_left, price, tip")
             _int_in(f"{name}.eat_ticks_left", c["eat_ticks_left"], 1, emax)
-        if "reserved" in c:
-            validate_items(c["reserved"])
+            _int_in(f"{name}.price", c["price"], 1, 10**9)
+            _nonneg_int(f"{name}.tip", c["tip"])
+        if "assigned_stove" in c:
+            sid, st = c["assigned_stove"], stoves.get(c["assigned_stove"])
+            if state != "waiting" or st is None or st.get("state") not in ("cooking", "ready") \
+                    or st.get("dish") != c["dish_id"]:
+                raise BadInput(f"{name}: đơn đã giao bếp phải khớp đúng một món đang nấu/chín ở bếp đó")
+            if sid in assigned:
+                raise BadInput(f"{name}: hai đơn cùng giao một bếp {sid}")
+            assigned.add(sid)
+        for k, v in validate_items(c.get("reserved", {})).items():
+            reserved[k] = reserved.get(k, 0) + v
+    # shortcut: chỉ so với quan.stock trong scenario; kho từ --inventory chưa được so
+    # (load_scenario không thấy file kho) — cần thêm lời gọi sau read_inventory nếu muốn chặt.
+    if "stock" in b:
+        over = sorted(k for k, v in reserved.items() if v > b["stock"].get(k, 0))
+        if over:
+            raise BadInput(f"khách giữ chỗ vượt kho: {over}")
 
 
 def _int_in(name, v, lo, hi):
