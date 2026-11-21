@@ -18,6 +18,8 @@
 - Lỗi đầu vào (contract/scenario/inputs/kho) → `raise BadInput` → mã thoát 2, trước khi ghi `--out`/`--inventory-out`.
 - (Phase 2) Kiểm số trong scenario bằng `_num` (chặn NaN/Infinity — `json.load` nhận chúng và làm JSONL hỏng). Bộ đếm có mức tối đa thì lấy mức đó từ tuning (`regrow_s`, `catch_cooldown_s`, `choke_interval_ticks`…), không viết số. Kiểm cần cả kho từ `--inventory` thì gọi từ `headless.py` sau `read_inventory` (ví dụ `check_reserved_fits`).
 
+- (Phase 3) Không được crash với đầu vào hỏng: mọi lỗi đọc/kiểu/giá trị → `BadInput` (mã 2), không bao giờ Traceback/mã 1. Bộ quét `tests/test_p3_robustness.py` — thêm trường mới thì thêm ca hỏng vào `CASES`. Đầu ra JSONL phải là JSON chuẩn (không NaN/Infinity).
+
 ## Ai sở hữu file nào (SuperIdol)
 | Người (handle) | Module | Sở hữu chính |
 |---|---|---|

@@ -1,6 +1,6 @@
 ---
 name: check-determinism-and-contract
-description: Rà code trước khi commit/PR để giữ headless tất định và đúng hợp đồng — RNG chỉ qua Streams, không đồng hồ hệ thống, duyệt thực thể qua sort_by_id, id qua IdAllocator, số liệu đọc từ game.contract.json, lỗi đầu vào raise BadInput (mã 2) trước khi ghi file. Dùng khi sửa chonoi/sim/*, scenario.py, contract.py, runner.py hoặc khi review PR.
+description: Rà code trước khi commit/PR để giữ headless tất định và đúng hợp đồng — RNG chỉ qua Streams, không đồng hồ hệ thống, duyệt thực thể qua sort_by_id, id qua IdAllocator, số liệu đọc từ game.contract.json, lỗi đầu vào raise BadInput (mã 2) trước khi ghi file, không crash với đầu vào hỏng. Dùng khi sửa chonoi/sim/*, scenario.py, contract.py, inputs.py, inventory.py, headless.py, runner.py hoặc khi review PR.
 ---
 
 # check-determinism-and-contract
@@ -39,6 +39,8 @@ T=$(mktemp -d); echo '{"quan": {"customers": [{"id": "C1", "table_id": "T9"}]}}'
 python3 -m chonoi.headless --mode quan --seed 1 --ticks 10 --scenario "$T/sc.json" --out "$T/o.jsonl"; echo "exit $?"
 ls "$T"   # không được có o.jsonl
 ```
+- Số đọc từ JSON phải qua `_num` (chặn NaN/Infinity); bộ đếm có mức tối đa thì so với tuning, không viết số.
+- Thêm trường/nút/khóa mới (inputs, scenario, kho) → thêm ca hỏng vào `CASES` trong `tests/test_p3_robustness.py`; ca nào ra mã 1 hoặc có `Traceback` là crash, phải chặn bằng `BadInput`.
 
 ## 5. Cuối cùng
 - `PYTHONPATH=tests:. python3 -m unittest discover -s tests -v` phải xanh; dán dòng tổng kết vào mô tả commit/PR.
