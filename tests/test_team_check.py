@@ -24,9 +24,21 @@ class TeamCheck(unittest.TestCase):
         self.assertEqual(check_team.validate(m, 4, actor="an-nguyen", event="pull_request"), [])
 
     def test_template_is_rejected(self):
-        with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "TEAM.md"), encoding="utf-8") as f:
-            m = check_team.parse_team(f.read())
+        # Mẫu chưa điền phải bị từ chối
+        dummy_template = """# TEAM
+| Thành viên | GitHub handle | Module chính | Vai quy trình | Người dự phòng cho |
+|---|---|---|---|---|
+| | | `sim/gather` | | |
+| | | `sim/quan` | | |
+| | | `client/ui` | | |
+| | | `qa` | | |
+"""
+        m = check_team.parse_team(dummy_template)
         self.assertTrue(check_team.validate(m, 4))
+        # TEAM.md thật của nhóm phải hợp lệ
+        with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "TEAM.md"), encoding="utf-8") as f:
+            actual = check_team.parse_team(f.read())
+        self.assertEqual(check_team.validate(actual, 4), [])
 
     def test_wrong_size_duplicate_and_outsider(self):
         m = check_team.parse_team(GOOD)
