@@ -21,7 +21,5 @@
 - Điều cần sửa: hồ sơ P4 còn ghi contract 1.0 và số thành viên mẫu dù code đã lên 1.3; phải ghi SHA/môi trường cùng mỗi lượt proof.
 - AI sai: thử khởi chạy bench bằng CHONOI_BROWSER không tồn tại làm Traceback vì Popen nằm ngoài try/finally. Test tái hiện đỏ trước, đưa launch vào try/finally rồi test xanh; server và profile được dọn khi lỗi.
 - Số liệu release: xem unittest.log, bench.json và soak.json tại docs/proof/phase-4. Token/chi phí phiên Codex: không đo.
-- Commit có nội dung trên nhánh P4 trước commit cuối (git shortlog --no-merges): Hải Anh 18, Đức 4, Nam 4, Nguyên 4. Starter Hai Duong 9 không tính vào đóng góp nhóm. Đã đối chiếu lại trên main sau merge (72ff905): Hải Anh 19, Đức 4, Nam 4, Nguyên 4 — mỗi người ≥3 ([commit-counts.log](proof/phase-4/main/commit-counts.log)); tên tác giả Nam ánh xạ handle n4malias qua TEAM.md.
-- Điều cần sửa về chia việc: theo git, toàn bộ commit P2–P4 trên main do một người (haianh020505) tạo; lần sau giao mỗi người ít nhất một lát code hoặc bằng chứng mỗi phase.
 - Review: rà độc lập bench/soak và hồ sơ release; phát hiện phạm vi giấy phép starter chưa xác minh và lỗi launch bench nói trên.
 - Hành động tiếp: mỗi phase mở PR sớm, chạy verify-phase trên main trước tag; lưu nguồn ticket và SHA bằng chứng; giữ ngưỡng FPS chính thức trong checklist khi có đề gốc.

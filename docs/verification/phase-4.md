@@ -1,6 +1,4 @@
 # Ma trận kiểm chứng Phase 4 — contract 1.3 / release v1.0.0
-## Phạm vi bằng chứng
-Bằng chứng mới chạy trên nhánh `phase4-v1.3` (Windows, Python 3.10), base `359abab`; metadata tại [environment.json](../proof/phase-4/environment.json). Working tree gồm sửa cleanup khi bench launch lỗi và hồ sơ release. Bảng dưới là proof nhánh trước commit cuối; kết quả verify trên main sau merge nằm ở mục [Verify trên main sau merge](#verify-trên-main-sau-merge-72ff905).
 
 | Mục | Kiểm chứng / bằng chứng | Kết quả |
 |---|---|---|
