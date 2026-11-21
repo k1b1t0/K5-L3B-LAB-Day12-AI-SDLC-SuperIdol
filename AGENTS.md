@@ -31,7 +31,7 @@
 |---|---|---|
 | Đức (`k1b1t0`) | sim/gather, Integrator | `chonoi/sim/gather.py`, `TEAM.md`, `docs/contracts/`, gắn tag |
 | Nam (`n4malias`) | sim/quan, PO | `chonoi/sim/quan.py`, `docs/clarify.md`, `docs/plan/`, `docs/adr/` |
-| C (`haianh020505`) | qa, AI harness | `chonoi/scenario.py`, `chonoi/contract.py`, phần kiểm đầu vào trong `chonoi/headless.py`, `tests/test_scenario_validation.py`, `tests/test_p*_*.py`, `docs/verification/`, `docs/proof/`, `AGENTS.md`, `.agents/skills/` |
+| Hải Anh (`haianh020505`) | qa, AI harness | `chonoi/scenario.py`, `chonoi/contract.py`, phần kiểm đầu vào trong `chonoi/headless.py`, `tests/test_scenario_validation.py`, `tests/test_p*_*.py`, `docs/verification/`, `docs/proof/`, `AGENTS.md`, `.agents/skills/` |
 | D | client/ui, Scrum/Release | `chonoi/web/`, `README.md` (Sáng tạo), `docs/ai-usage-log.md`, `docs/standup.md`, `docs/retro.md`, `CHANGELOG.md`, `CREDITS.md` |
 
 Agent chỉ sửa file thuộc lát được giao; cần sửa file của người khác thì báo người đó.

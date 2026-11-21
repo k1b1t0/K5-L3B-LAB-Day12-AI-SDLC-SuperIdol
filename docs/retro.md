@@ -2,7 +2,7 @@
 
 ## Phase 2 (nhanh)
 - **Điều tốt**:
-  - Phân chia 4 nhánh độc lập theo file checklist (`checklist-duc.md`, `checklist-nam.md`, `checklist-C.md`, `checklist-D.md`) giúp cả nhóm code song song không hề bị xung đột file hay git conflict.
+  - Phân chia 4 nhánh độc lập theo checklist của từng thành viên giúp cả nhóm code song song không hề bị xung đột file hay git conflict.
   - Toàn bộ 42 smoke unit tests đều pass 100%.
   - Giao diện Web Client `chonoi.live` được nâng cấp sinh động với đồ họa Chợ Nổi, bảng HUD thực đơn và âm thanh Web Audio trực quan giúp quá trình test thủ công cực kỳ thuận tiện.
 - **Điều tệ**:
@@ -16,11 +16,11 @@
 - **Điều tệ**: snapshot JSONL làm tròn còn file không → smoke "so chính xác" dễ hiểu sai; đã ghi clarify #7.
 
 ## Phase 4 (release contract 1.3)
-- Rà hành động P2: đã có clarify cho chuyển pha, kho cá thể và độ tươi; chưa tìm thấy TICKET-04 gốc trong checkout. Dùng HANDOFF-C làm checklist, không tự nhận ngưỡng hiệu năng hoặc mã AC chính thức.
+- Rà hành động P2: đã có clarify cho chuyển pha, kho cá thể và độ tươi; đối chiếu yêu cầu với contract và test, không tự đặt ngưỡng hiệu năng hoặc mã AC chính thức.
 - Điều tốt: giữ luật trong contract, gom validation kho, có test migration và JSONL tất định; kiểm chứng lại thay vì dùng log cũ.
 - Điều cần sửa: hồ sơ P4 còn ghi contract 1.0 và số thành viên mẫu dù code đã lên 1.3; phải ghi SHA/môi trường cùng mỗi lượt proof.
 - AI sai: thử khởi chạy bench bằng CHONOI_BROWSER không tồn tại làm Traceback vì Popen nằm ngoài try/finally. Test tái hiện đỏ trước, đưa launch vào try/finally rồi test xanh; server và profile được dọn khi lỗi.
-- Số liệu release: xem unittest.log, bench.json và soak.json tại docs/proof/phase-4; không dùng số đo cũ trong handoff. Token/chi phí phiên Codex: không đo.
-- Commit có nội dung trên nhánh P4 trước commit cuối (git shortlog --no-merges): C 18, Đức 4, Nam 4, Nguyên 4. Starter Hai Duong 9 không tính vào đóng góp nhóm. Cần đối chiếu lại trên main sau merge; tên tác giả Nam ánh xạ handle n4malias qua TEAM.md.
+- Số liệu release: xem unittest.log, bench.json và soak.json tại docs/proof/phase-4. Token/chi phí phiên Codex: không đo.
+- Commit có nội dung trên nhánh P4 trước commit cuối (git shortlog --no-merges): Hải Anh 18, Đức 4, Nam 4, Nguyên 4. Starter Hai Duong 9 không tính vào đóng góp nhóm. Cần đối chiếu lại trên main sau merge; tên tác giả Nam ánh xạ handle n4malias qua TEAM.md.
 - Review: rà độc lập bench/soak và hồ sơ release; phát hiện phạm vi giấy phép starter chưa xác minh và lỗi launch bench nói trên.
 - Hành động tiếp: mỗi phase mở PR sớm, chạy verify-phase trên main trước tag; lưu nguồn ticket và SHA bằng chứng; giữ ngưỡng FPS chính thức trong checklist khi có đề gốc.

@@ -1,7 +1,7 @@
 # ADR-0001: Kho cá thể và độ tươi chính xác (Contract v1.2)
 
 - Trạng thái: chấp nhận
-- Ngày, người quyết: 2026-11-21, C (haianh020505), báo Đức (gather), Nam (quan), Nguyên (web)
+- Ngày, người quyết: 2026-11-21, Hải Anh (haianh020505), báo Đức (gather), Nam (quan), Nguyên (web)
 
 ## Bối cảnh
 TICKET-03 thay file kho đếm `{"items":{kind:n}}` bằng kho cá thể `{"items":[{id,kind,fresh}]}`. Có thêm độ tươi hao theo tick, ngưỡng ươn 30, giữ chỗ theo id và giá theo độ tươi. Ngưỡng và `floor` phải tính đúng tuyệt đối; JSONL làm tròn 3 chữ số khi xuất.
