@@ -23,7 +23,6 @@ class TestQuanSlice4(unittest.TestCase):
                 "dish_id": "ca_loc_nuong_trui",
                 "state": "waiting",
                 "patience_ticks_left": 3600,
-                "patience_max_ticks": 3600,
                 "reserved": {"ca_loc": 1}
             }],
             "random_customers": False
@@ -35,7 +34,7 @@ class TestQuanSlice4(unittest.TestCase):
         self.assertIn("cook_started", [r["name"] for r in evs])
         stove = s.sim.stoves[0]
         self.assertEqual(stove["state"], "cooking")
-        self.assertEqual(stove["dish"], "ca_loc_nuong_trui")
+        self.assertEqual(stove["dish"], {"order_id": "C1", "dish_id": "ca_loc_nuong_trui", "base_price": 60})
 
         # 2. Chờ 6 giây (360 tick) để món chín
         cook_ticks = stove["cook_ticks_left"]
@@ -48,7 +47,7 @@ class TestQuanSlice4(unittest.TestCase):
         # 3. Bấm interact tại bếp -> bưng món lên tay
         evs_pick = s.step(InputState((0.0, 0.0), {}, {"interact"}))
         self.assertIn("dish_picked", [r["name"] for r in evs_pick])
-        self.assertEqual(s.sim.hand, "ca_loc_nuong_trui")
+        self.assertEqual(s.sim.hand["dish_id"], "ca_loc_nuong_trui")  # v1.1: món mang order_id
         self.assertEqual(stove["state"], "idle")
 
         # 4. Di chuyển lại bàn T1 [9, 2] và giao món

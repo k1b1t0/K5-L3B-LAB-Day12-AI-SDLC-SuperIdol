@@ -47,6 +47,27 @@ CASES = {
     "kho số thực": ("quan", None, None, {"items": {"ca_loc": 1.5}}),
     "kho nguyên liệu lạ": ("quan", None, None, {"items": {"thit_bo": 1}}),
     "kho bool": ("quan", None, None, {"items": {"ca_loc": True}}),
+    # v1.1 (Phase 2): trường mới
+    "day khối day là mảng": ("day", {"day": []}, None, None),
+    "day upgrades là mảng": ("day", {"day": {"upgrades": [1]}}, None, None),
+    "day money NaN": ("day", '{"day": {"money": NaN, "earned": 1}}', None, None),
+    "day day_plan phần tử là số": ("day", {"day": {"day_plan": [1]}}, None, None),
+    "day day_plan dishes là mảng": ("day", {"day": {"day_plan": [{"day": 1, "dishes": []}]}}, None, None),
+    "gather monsters là object": ("gather", {"gather": {"monsters": {}}}, None, None),
+    "gather monster waypoints chuỗi": ("gather", {"gather": {"monsters": [{"id": "M1", "kind": "ca_sau",
+                                                                        "pos": [60, 24], "waypoints": "x"}]}},
+                                       None, None),
+    "gather monster recoil_dir NaN": ("gather", '{"gather": {"monsters": [{"id": "M1", "kind": "ca_sau", '
+                                                '"pos": [60, 24], "waypoints": [[60, 24], [64, 24]], '
+                                                '"state": "recoil", "state_ticks_left": 3, "recoil_dir": [NaN, 0]}]}}',
+                                      None, None),
+    "gather random_fish chuỗi": ("gather", {"gather": {"random_fish": "no"}}, None, None),
+    "quan món ở tay là số": ("quan", {"quan": {"hand": 5}}, None, None),
+    "quan dish base_price chuỗi": ("quan", {"quan": {"hand": {"order_id": "C1", "dish_id": DISH,
+                                                              "base_price": "60"}}}, None, None),
+    "buy là số": ("day", None, {"frames": [{"tick": 0, "buy": 1}]}, None),
+    "buy rỗng": ("day", None, {"frames": [{"tick": 0, "buy": ""}]}, None),
+    "pause là chuỗi": ("gather", None, {"frames": [{"tick": 0, "pause": "yes"}]}, None),
 }
 
 
@@ -86,7 +107,7 @@ class Phase3Robustness(unittest.TestCase):
                              {"tick": 300, "move": [-1, -1]}, {"tick": 500, "interact": True}]}
         with Workdir() as w:
             inp = write_json(w.path("in.json"), frames)
-            for mode in ("gather", "quan"):
+            for mode in ("gather", "quan", "day"):
                 out = w.path(f"{mode}.jsonl")
                 code, err = run_headless("--mode", mode, "--seed", "7", "--ticks", "900", "--inputs", inp, "--out", out)
                 self.assertEqual(code, 0, err)
