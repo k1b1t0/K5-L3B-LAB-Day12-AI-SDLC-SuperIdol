@@ -1,0 +1,19 @@
+$ scenario:
+{"gather":{"hold":[{"id":"I1","kind":"ca_loc","fresh":100},{"id":"I2","kind":"bong_sung","fresh":100}]},"quan":{"time_left_ticks":1}}
+$ inputs:
+{"frames":[{"tick":0,"interact":true},{"tick":1,"interact":false},{"tick":2,"shop_done":true}]}
+exit 0
+tick 0 day 1 gather hold [{'id': 'I1', 'kind': 'ca_loc', 'fresh': 100}, {'id': 'I2', 'kind': 'bong_sung', 'fresh': 100}]
+tick 1 day 1 quan stock [{'id': 'I1', 'kind': 'ca_loc', 'fresh': 99.992}, {'id': 'I2', 'kind': 'bong_sung', 'fresh': 99.992}]
+tick 2 day 1 shop stock [{'id': 'I1', 'kind': 'ca_loc', 'fresh': 99.987}, {'id': 'I2', 'kind': 'bong_sung', 'fresh': 99.987}]
+tick 3 day 2 gather hold [{'id': 'I3', 'kind': 'ca_loc', 'fresh': 100}, {'id': 'I4', 'kind': 'bong_sung', 'fresh': 100}]
+tick 4 day 2 gather hold [{'id': 'I3', 'kind': 'ca_loc', 'fresh': 99.992}, {'id': 'I4', 'kind': 'bong_sung', 'fresh': 99.992}]
+$ day --days 1 --seed 1 --ticks 30000 (không input)
+exit 0
+{"type":"event","tick":0,"phase":"gather","day":1,"name":"phase_start","data":{}}
+{"type":"event","tick":10800,"phase":"gather","day":1,"name":"gather_end","data":{"reason":"time","inventory":{"items":[]}}}
+{"type":"event","tick":10800,"phase":"quan","day":1,"name":"phase_start","data":{}}
+{"type":"event","tick":21600,"phase":"quan","day":1,"name":"quan_end","data":{"reason":"time","money":0,"earned":0,"shift_earned":0,"reputation":3.0}}
+{"type":"event","tick":21600,"phase":"shop","day":1,"name":"phase_start","data":{}}
+{"type":"event","tick":22200,"phase":"shop","day":1,"name":"shop_end","data":{"reason":"time"}}
+{"type":"end","ticks":22200,"sim_tick":22200,"mode":"day","state":"finished","reason":"days_complete","money":0,"earned":0,"reputation":3.0,"score":300,"days_completed":1}

@@ -1,19 +1,20 @@
-"""Buổi sáng — Lặn & Hái (`gather`), Test Contract v1.1.
+"""Buổi sáng — Lặn & Hái (`gather`), Test Contract v1.2.
 
 Mặt cắt dòng sông nhìn NGANG: vị trí `[x, d]` (x hướng đông, d là độ sâu tăng xuống, d = 0 là mặt nước).
 
 Thứ tự một bước (Ticket-02 mục 4.5):
-  đồng hồ, cooldown, bất tử, hồi nút -> bơi, oxy, ngạt -> thủy quái theo id rồi tối đa một hit
+  đồng hồ, cooldown, bất tử, hồi nút, hao tươi giỏ (spoiled theo id) -> bơi, oxy, ngạt -> thủy quái theo id rồi tối đa một hit
   -> tương tác (bến trước hái) -> bắt cá (vị trí cá TRƯỚC khi bơi) -> hết giờ
   -> nếu còn giờ: cá bơi, sinh cá theo lịch.
 Máu về 0 (do ngạt hoặc hit) -> faint rồi gather_end(fainted) ngay, bỏ các bước còn lại.
+Giỏ: mảng cá thể {id, kind, fresh}; fresh là Fraction, hàng mới = freshness.initial, hao từ bước sau.
 """
 
 import math
 
 from ..ids import id_key, sort_by_id
-from ..inventory import count_kinds
-from .common import Wallet, clamp, move_toward, ticks
+from ..inventory import fresh_in, inventory_payload, items_out
+from .common import Wallet, clamp, frac, move_toward, ticks
 from .ramp import ramp_velocity
 
 AXES = ("x", "d")
@@ -29,7 +30,7 @@ class GatherSim:
     phase = "gather"
 
     def __init__(self, tuning, scenario, streams, ids, wallet=None, day=1, active_upgrades=None,
-                 hold_items=None):
+                 hold_items=None, new_hold_ids=False):
         t = tuning["gather"]
         self.t = t
         self.tuning = tuning
@@ -53,11 +54,19 @@ class GatherSim:
         self.catch_cd_ticks = p.get("catch_cd_ticks", 0)
         self.time_left_ticks = scenario.get("time_left_ticks", ticks(t["duration_s"]))
         self.phase_tick = 0
+        fr = tuning["freshness"]
+        self.fresh_initial = frac(fr["initial"])
+        self.decay = frac(fr["gather_decay_per_s"]) / 60
+        self.spoiled_below = frac(fr["spoiled_below"])
         # giỏ: mảng cá thể {id, kind, fresh} theo thứ tự vào giỏ (cuối là mới nhất)
         if hold_items is not None:
             self.hold = hold_items
         else:
-            self.hold = [self._new_item(k) for k in scenario.get("hold", [])]
+            # day: Ngày đầu giữ id trong mẫu, Ngày kế cấp id mới theo thứ tự mảng
+            self.hold = [{"id": ids.new("I") if new_hold_ids else h["id"], "kind": h["kind"],
+                          "fresh": fresh_in(h["fresh"])} for h in scenario.get("hold", [])]
+        for i in self.hold:
+            ids.reserve(i["id"])
         src_nodes = scenario["nodes"] if "nodes" in scenario else t["nodes"]
         self.nodes = [{"id": n["id"], "kind": n["kind"], "pos": [float(c) for c in n["pos"]],
                        "regrow_ticks": n.get("regrow_ticks", 0)} for n in src_nodes]
@@ -111,12 +120,10 @@ class GatherSim:
         return self.wallet.reputation
 
     def inventory_payload(self) -> dict:
-        return {"items": count_kinds(i["kind"] for i in self.hold)}
-
-    def inventory_items(self) -> dict:  # tên cũ
-        return self.inventory_payload()["items"]
+        return inventory_payload(self.hold)
 
     def hold_out(self):
+        """Loại hàng trong giỏ theo thứ tự vào giỏ (tiện cho test)."""
         return [i["kind"] for i in self.hold]
 
     def snapshot(self) -> dict:
@@ -126,7 +133,7 @@ class GatherSim:
                        "hp": self.hp, "hp_max": self.hp_max, "zero_oxy_ticks": self.zero_oxy_ticks,
                        "catch_cd_ticks": self.catch_cd_ticks, "invuln_ticks": self.invuln_ticks,
                        "at_surface": self._at_surface()},
-            "hold": self.hold_out(), "hold_count": len(self.hold),
+            "hold": items_out(self.hold), "hold_count": len(self.hold),
             "hold_capacity": self.t["hold_capacity"],
             "nodes": [{"id": n["id"], "kind": n["kind"], "pos": n["pos"], "regrow_ticks": n["regrow_ticks"],
                        "ready": n["regrow_ticks"] == 0} for n in sort_by_id(self.nodes)],
@@ -207,15 +214,19 @@ class GatherSim:
                     ev.append(("fish_spawned", {"id": f["id"], "kind": f["kind"], "pos": list(f["pos"])}))
         return ev
 
-    # --- độ tươi (Phase 3) --------------------------------------------------------
+    # --- độ tươi (v1.2) -----------------------------------------------------------
     def _decay(self, ev):
-        pass
+        for i in sort_by_id(self.hold):
+            before = i["fresh"]
+            i["fresh"] = max(before - self.decay, 0)
+            if before >= self.spoiled_below > i["fresh"]:
+                ev.append(("spoiled", {"item_id": i["id"], "kind": i["kind"], "location": "hold"}))
 
     def _new_item(self, kind):
-        return {"id": self.ids.new("I"), "kind": kind, "fresh": None}
+        return {"id": self.ids.new("I"), "kind": kind, "fresh": self.fresh_initial}
 
     def _lost_out(self, items):
-        return [i["kind"] for i in items]
+        return items_out(items)
 
     # --- hái / bắt ---------------------------------------------------------------
     def _free(self):

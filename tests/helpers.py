@@ -16,6 +16,29 @@ def write_json(path, obj):
     return path
 
 
+def inst(kinds, fresh=100, start=1):
+    """Fixture v1.2: mảng loại -> mảng cá thể {id: I<start+n>, kind, fresh} theo thứ tự."""
+    return [{"id": f"I{start + n}", "kind": k, "fresh": fresh} for n, k in enumerate(kinds)]
+
+
+def assert_items_close(tc, got, want, tol=0.01):
+    """So mảng cá thể: id/kind chính xác, fresh trong dung sai quan sát ±0.01 (TICKET-03)."""
+    tc.assertEqual([(i["id"], i["kind"]) for i in got], [(i["id"], i["kind"]) for i in want])
+    for a, b in zip(got, want):
+        tc.assertLessEqual(abs(a["fresh"] - b["fresh"]), tol, (a, b))
+
+
+def kinds(items):
+    return [i["kind"] for i in items]
+
+
+def counts(items):
+    out = {}
+    for i in items:
+        out[i["kind"]] = out.get(i["kind"], 0) + 1
+    return {k: out[k] for k in sorted(out)}
+
+
 def frames(*fr):
     return {"frames": list(fr)}
 

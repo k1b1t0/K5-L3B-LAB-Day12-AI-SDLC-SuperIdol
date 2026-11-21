@@ -1,4 +1,4 @@
-"""Vòng tick (Contract B/E, v1.1).
+"""Vòng tick (Contract B/E, v1.2).
 
 Thứ tự ghi: [day: sự kiện tick 0] -> snapshot tick 0 -> với mỗi bước: sự kiện (theo thứ tự xử lý) rồi snapshot
 (bội số --snapshot-every, tick đổi pha hoặc tick dừng) -> dòng 'end'. Mỗi tick tối đa một snapshot.
@@ -14,17 +14,12 @@ import math
 
 from .ids import IdAllocator
 from .inputs import InputPlayer
-from .inventory import write_inventory
+from .inventory import validate_items, write_inventory
 from .jsonl import JsonlWriter
 from .rng import Streams
 from .sim.day import DaySim
 from .sim.gather import GatherSim
 from .sim.quan import QuanSim
-
-
-def items_from_counts(counts, ids):
-    """Kho đếm {kind: n} -> mảng cá thể, cấp id theo kind rồi thứ tự."""
-    return [{"id": ids.new("I"), "kind": k, "fresh": None} for k in sorted(counts) for _ in range(counts[k])]
 
 
 def build_sim(mode, tuning, scenario, seed, inventory=None, days=1):
@@ -33,8 +28,8 @@ def build_sim(mode, tuning, scenario, seed, inventory=None, days=1):
         return DaySim(tuning, scenario, streams, ids, days=days)
     if mode == "gather":
         return GatherSim(tuning, scenario, streams, ids)
-    src = inventory if inventory is not None else scenario.get("stock", {})
-    return QuanSim(tuning, scenario, streams, ids, stock_items=items_from_counts(src, ids))
+    stock = inventory if inventory is not None else validate_items(scenario.get("stock", []), name="quan.stock")
+    return QuanSim(tuning, scenario, streams, ids, stock_items=stock)
 
 
 class Session:

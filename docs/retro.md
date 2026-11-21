@@ -11,6 +11,10 @@
 - **1 hành động cho Phase 3**:
   - PO (Nam) tiếp tục chốt sớm schema sự kiện và bảng thay đổi của Phase 2, Phase 3 vào `docs/clarify.md` ngay trong 5 phút đầu mốc giờ trước khi cả nhóm bắt tay vào code.
 
+## Phase 3 (nhanh — đổi kho)
+- **Điều rút ra từ lần đổi kho**: gom đọc/ghi kho về một chỗ (`chonoi/inventory.py`) nên đổi schema chỉ chạm 1 file lõi + fixture; test hộp đen so nguyên object kho thì đổi schema là đỏ hàng loạt → helper `inst()` giúp chuyển nhanh.
+- **Điều tệ**: snapshot JSONL làm tròn còn file không → smoke "so chính xác" dễ hiểu sai; đã ghi clarify #7.
+
 ## Phase 4 (cuối)
 - **Rà lại hành động Phase 2: đã làm chưa? vì sao?**:
   - Đã thực hiện: PO trích xuất đề và phân tích bảng tác động ngay khi mở phase.

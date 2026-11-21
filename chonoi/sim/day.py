@@ -7,7 +7,8 @@ Pha mới chỉ chạy gameplay từ bước sau. Tiền, earned, uy tín, cấp
 step() trả list (phase, name, data, day); runner bọc thành dòng event.
 """
 
-from ..inventory import count_kinds
+from ..ids import sort_by_id
+from ..inventory import items_out
 from .common import Wallet
 from .gather import GatherSim
 from .quan import QuanSim
@@ -43,7 +44,7 @@ class ShopPhase:
         self.done = False
 
     def snapshot(self):
-        return {"stock": count_kinds(i["kind"] for i in self.stock)}
+        return {"stock": items_out(sort_by_id(self.stock))}  # hàng ở Shop không hao
 
     def step(self, inp):
         ev = []
@@ -142,7 +143,7 @@ class DaySim:
         self.active_upgrades = dict(self.upgrades)  # chỉ khi dựng Ngày mới
         self.plan = plan_for(self.tuning, self.plan_overrides, self.day)
         self.cur = GatherSim(self.tuning, self.gather_tpl, self.streams, self.ids, wallet=self.wallet,
-                             day=self.day, active_upgrades=self.active_upgrades)
+                             day=self.day, active_upgrades=self.active_upgrades, new_hold_ids=self.day > 1)
         return [("gather", "day_start", {}, self.day),
                 ("gather", "day_plan", {"dishes": self.plan["dishes"], "ingredients": self.plan["ingredients"]},
                  self.day),

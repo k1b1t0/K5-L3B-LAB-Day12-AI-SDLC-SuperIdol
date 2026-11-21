@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Phase 3] - 2026-11-21 — Test Contract v1.2
+
+### Changed (breaking)
+- File kho `{"items":{kind:n}}` → `{"items":[{"id","kind","fresh"}]}` (kho cá thể, sắp theo id). Kho đếm v1.1 → mã 2. Xem [ADR-0001](docs/adr/0001-instance-inventory.md).
+- `contract_version:"1.2"`, thêm `tuning.freshness {initial:100, gather_decay_per_s:0.5, quan_decay_per_s:0.25, spoiled_below:30}`.
+- Scenario: `gather.hold`, `quan.stock` là mảng cá thể; `customers[].reserved` là mảng id.
+- JSONL: snapshot `hold`/`stock` (cả Shop) là cá thể, `reserved` là mảng id; `cook_started.items`, `lost` là cá thể.
+- Giá: `base_price = floor(giá niêm yết × TB fresh / 100)` chốt lúc bắt đầu nấu.
+
+### Added
+- Hao tươi giỏ 0.5/s, kho quán 0.25/s; pause dừng hao; event `spoiled {item_id, kind, location}`.
+- Giữ chỗ theo id (tươi nhất, hòa theo id); hàng giữ vừa ươn → nhả, giữ lại một lần, không đủ → `unfulfillable`.
+- Day: Ngày 1 giữ id mẫu, Ngày kế cấp id mới.
+- HUD: vạch tươi dưới ô giỏ, ✕ hàng ươn, "tươi TB · ươn n", chữ bay khi ươn.
+- `tests/test_p3_fresh.py` (13 test), 14 ca kho hỏng mới trong `test_p3_robustness`.
+
+### Cập nhật fixture (migration)
+- Mọi fixture kho/giỏ/reserved dùng helper `inst([...])` trong `tests/helpers.py`; lý do từng test đổi ghi ở `docs/verification/phase-3.md`.
+
 ## [Phase 2] - 2026-11-21 — Test Contract v1.1
 
 ### Changed (breaking)

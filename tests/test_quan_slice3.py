@@ -2,6 +2,8 @@
 
 import unittest
 
+from helpers import inst
+
 from chonoi.contract import load_contract
 from chonoi.inputs import InputState
 from chonoi.runner import Session
@@ -14,7 +16,7 @@ class TestQuanSlice3(unittest.TestCase):
     def test_customer_arrives_and_reserves_stock(self):
         """Khách đến tại first_customer_tick (120) và giữ chỗ nguyên liệu."""
         sc = {
-            "stock": {"ca_loc": 1, "bong_sung": 2},
+            "stock": inst(["ca_loc", "bong_sung", "bong_sung"]),
             "random_customers": True
         }
         s = Session("quan", self.tuning, sc, seed=1)
@@ -32,7 +34,7 @@ class TestQuanSlice3(unittest.TestCase):
     def test_no_dish_when_stock_empty(self):
         """Kho rỗng không có món nấu được -> phát no_dish, khách không ngồi."""
         sc = {
-            "stock": {},
+            "stock": [],
             "random_customers": True
         }
         s = Session("quan", self.tuning, sc, seed=1)
@@ -47,7 +49,7 @@ class TestQuanSlice3(unittest.TestCase):
     def test_customer_patience_and_leaves(self):
         """Khách hết kiên nhẫn thì bỏ đi (customer_left) và trừ uy tín."""
         sc = {
-            "stock": {"ca_loc": 1},  # v1.1: đơn reserved phải giữ chỗ được trong kho thật
+            "stock": inst(["ca_loc"]),  # v1.1: đơn reserved phải giữ chỗ được trong kho thật
             "customers": [{
                 "id": "C1",
                 "table_id": "T1",

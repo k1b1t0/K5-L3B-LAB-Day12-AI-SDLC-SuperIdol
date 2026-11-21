@@ -1,8 +1,9 @@
-"""Nạp và kiểm scenario (Contract D + Ticket-02 4.3, v1.1).
+"""Nạp và kiểm scenario (Contract D + Ticket-02 4.3 + Ticket-03 v1.2).
 
 gather/quan: trả về khối đúng mode. day: trả {"day":..., "gather":..., "quan":...} (gather/quan là mẫu mỗi Ngày).
 Mọi lỗi cú pháp, kiểu, miền, liên kết hay mâu thuẫn -> BadInput (mã 2), kiểm TRƯỚC khi ghi đầu ra.
-Kiểm phụ thuộc kho thực (giữ chỗ vượt kho) nằm ở QuanSim lúc dựng: quán độc lập vẫn trước khi ghi đầu ra,
+v1.2: gather.hold / quan.stock là mảng cá thể {id, kind, fresh}; customers[].reserved là mảng id cá thể.
+Kiểm phụ thuộc kho thực (id giữ chỗ có trong kho, chưa ươn, đúng công thức) nằm ở QuanSim lúc dựng: quán độc lập vẫn trước khi ghi đầu ra,
 day thì lúc mở quán.
 """
 
@@ -10,7 +11,7 @@ import json
 import math
 
 from .errors import BadInput
-from .inventory import KINDS, validate_items
+from .inventory import validate_counts, validate_items
 
 GATHER_KEYS = {"player", "hold", "nodes", "fish", "random_fish", "time_left_ticks", "monsters"}
 GATHER_PLAYER_KEYS = {"pos", "vel", "heading_deg", "hp", "oxygen_ticks", "zero_oxy_ticks",
@@ -142,9 +143,7 @@ def _validate_gather(b, tuning):
     if "random_fish" in b:
         _bool("random_fish", b["random_fish"])
     if "hold" in b:
-        h = b["hold"]
-        if not isinstance(h, list) or any(not isinstance(k, str) or k not in KINDS for k in h):
-            raise BadInput("hold phải là mảng id nguyên liệu hợp lệ")
+        h = validate_items(b["hold"], name="gather.hold")
         if len(h) > g["hold_capacity"]:
             raise BadInput("hold vượt sức chứa")
     p = b.get("player", {})
@@ -249,8 +248,9 @@ def _validate_quan(b, tuning, day_mode=False):
     for arr in ("stoves", "tables", "customers"):
         if arr in b:
             _check_ids(arr, b[arr])
+    stock_ids = None
     if "stock" in b:
-        validate_items(b["stock"])
+        stock_ids = {i["id"] for i in validate_items(b["stock"], name="quan.stock")}
     p = b.get("player", {})
     _keys("quan.player", p, {"pos", "vel"})
     qb = q["bounds"]
@@ -328,12 +328,18 @@ def _validate_quan(b, tuning, day_mode=False):
             if c.get("eat_ticks_left", 0) != 0:
                 raise BadInput(f"{name}: khách chờ thì eat_ticks_left phải bằng 0")
         if "reserved" in c and c["reserved"] is not None:
-            held = validate_items(c["reserved"])
+            held = c["reserved"]
+            if not isinstance(held, list) or any(not isinstance(i, str) or not i for i in held):
+                raise BadInput(f"{name}.reserved phải là mảng id cá thể (chuỗi khác rỗng)")
+            if len(set(held)) != len(held):
+                raise BadInput(f"{name}.reserved có id trùng")
             if status != "reserved":
                 if held:
                     raise BadInput(f"{name}: chỉ đơn reserved mới giữ chỗ nguyên liệu")
-            elif held != menu[c["dish_id"]]["recipe"]:
-                raise BadInput(f"{name}: reserved phải đúng công thức món {c['dish_id']}")
+            elif not held:
+                raise BadInput(f"{name}: đơn reserved khai reserved thì phải đủ công thức món {c['dish_id']}")
+            if stock_ids is not None and not set(held) <= stock_ids:
+                raise BadInput(f"{name}.reserved trỏ tới id không có trong quan.stock")
         has_dish = c["id"] in dishes
         if status == "assigned":
             if not has_dish or dishes[c["id"]][1]["dish_id"] != c["dish_id"]:
@@ -415,5 +421,5 @@ def _validate_day(d, tuning):
             for dish, n in dishes.items():
                 for k, qn in menu[dish]["recipe"].items():
                     want[k] = want.get(k, 0) + qn * n
-            if validate_items(p["ingredients"]) != want:
+            if validate_counts(p["ingredients"]) != want:
                 raise BadInput(f"{name}.ingredients không khớp tổng công thức × số suất")

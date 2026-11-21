@@ -2,6 +2,8 @@
 
 import unittest
 
+from helpers import inst
+
 from chonoi.contract import load_contract
 from chonoi.runner import Session
 from helpers import Workdir, events, frames, read_jsonl, run_headless, snapshots, write_json
@@ -32,7 +34,7 @@ class TestGatherSlice2(unittest.TestCase):
         sc = {
             "player": {"pos": [12.0, 0.0]},
             "nodes": [{"id": "N1", "kind": "bong_dien_dien", "pos": [12.0, 0.0], "regrow_ticks": 0}],
-            "hold": ["ca_loc"] * cap
+            "hold": inst(["ca_loc"] * cap)
         }
         s = Session("gather", self.tuning, sc, seed=1)
         from chonoi.inputs import InputState

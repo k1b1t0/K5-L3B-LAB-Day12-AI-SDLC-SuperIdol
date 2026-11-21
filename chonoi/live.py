@@ -102,7 +102,8 @@ class LiveGame:
     def state_json(self) -> bytes:
         with self._lock:
             snap = self.session.snapshot()
-            snap["meta"] = self.tuning.get(self.session.sim.phase, {})  # day: tuning của pha hiện tại
+            snap["meta"] = dict(self.tuning.get(self.session.sim.phase, {}),  # day: tuning của pha hiện tại
+                                freshness=self.tuning.get("freshness"))  # v1.2: HUD đánh dấu hàng ươn
             snap["menu"] = self.tuning["menu"]
             snap["shop_upgrades"] = self.tuning.get("shop", {}).get("upgrades", {})
             snap["events"] = list(self.events)

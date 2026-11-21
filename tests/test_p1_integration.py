@@ -6,8 +6,9 @@ Bổ sung cho test_smoke_p1 (đã có INV-01 đọc kho ở tick 0 và CON-02 t�
 import json
 import math
 import unittest
+from fractions import Fraction
 
-from helpers import ROOT, Workdir, events, read_jsonl, run_headless, snapshots, write_json
+from helpers import ROOT, Workdir, assert_items_close, counts, events, read_jsonl, run_headless, snapshots, write_json
 
 # v1.1: cá bơi và sinh thêm -> dựng scenario cố định (random_fish: false, một đàn F2 đứng sẵn cạnh Út Sen).
 # Út Sen ở [12, 3] dưới nước: bắt F2 (cá lóc) -> ngoi lên -> hái N1 [12, 0] -> bơi về bến cập bến.
@@ -21,7 +22,12 @@ GATHER_FRAMES = {"frames": [
     {"tick": 300, "interact": True}, {"tick": 301, "interact": False},   # docked
 ]}
 GATHER_TICKS = 2000
-INVENTORY = {"bong_dien_dien": 1, "ca_loc": 1}  # v1.1: đủ nấu ca_loc_nuong_trui hoặc canh_chua_ca_loc (seed chọn)
+# v1.2: kho cá thể. I1 cá lóc bắt ở tick 1, I2 bông điên điển hái ở tick 111, cập bến tick 301;
+# hao 0.5/s = 1/120 mỗi tick từ bước sau khi nhặt -> fresh = 100 - (301 - tick nhặt) / 120.
+FRESH = {"I1": 100 - Fraction(300, 120), "I2": 100 - Fraction(190, 120)}
+INVENTORY = [{"id": "I1", "kind": "ca_loc", "fresh": float(FRESH["I1"])},
+             {"id": "I2", "kind": "bong_dien_dien", "fresh": float(FRESH["I2"])}]
+COUNTS = {"bong_dien_dien": 1, "ca_loc": 1}  # đủ nấu ca_loc_nuong_trui hoặc canh_chua_ca_loc (seed chọn)
 
 # Út Sen đứng ngay bếp B1 [2, 8]; khách đầu tiên đến ở first_customer_tick (120).
 # Nấu xong (món lâu nhất 8 s) -> bưng -> đi sang bàn T1 [9, 2] -> giao món. Thời điểm đã đo bằng chạy thật.
@@ -72,7 +78,8 @@ class Phase1EndToEnd(unittest.TestCase):
         g_flow = [(e["name"], e["data"].get("node_id") or e["data"].get("fish_id")) for e in events(g_rows)]
         self.assertEqual(g_flow, [("fish_caught", "F2"), ("surface", None), ("gather", "N1"), ("gather_end", None)])
         g_end = events(g_rows, "gather_end")[0]["data"]
-        self.assertEqual(g_end, {"reason": "docked", "inventory": {"items": INVENTORY}})
+        self.assertEqual((g_end["reason"], list(g_end["inventory"])), ("docked", ["items"]))
+        assert_items_close(self, g_end["inventory"]["items"], INVENTORY)  # JSONL làm tròn 3 chữ số, dung sai ±0.01
         self.assertEqual(g_rows[-1]["reason"], "docked")
 
         names = [r["name"] for r in events(rows)]
@@ -88,19 +95,24 @@ class Phase1EndToEnd(unittest.TestCase):
         served, paid = events(rows, "served")[0], events(rows, "paid")[0]
         self.assertEqual(paid["tick"] - served["tick"], int(round(q["eat_s"] * 60)))
 
-        tip = math.floor(dish["price"] * q["tip_rate"])  # v1.1: tip = floor(base_price × tip_rate)
-        self.assertEqual((paid["data"]["base_price"], paid["data"]["tip"]), (dish["price"], tip))
+        # v1.2: base_price = floor(giá × trung bình fresh lúc bắt đầu nấu / 100); quán hao 0.25/s = 1/240 mỗi tick
+        used_ids = sorted(i["id"] for i in start["data"]["items"])
+        avg = sum(FRESH[i] - Fraction(start["tick"], 240) for i in used_ids) / len(used_ids)
+        base = math.floor(Fraction(dish["price"]) * avg / 100)
+        self.assertLess(base, dish["price"])
+        tip = math.floor(base * Fraction(str(q["tip_rate"])))  # tip = floor(base_price × tip_rate)
+        self.assertEqual((paid["data"]["base_price"], paid["data"]["tip"]), (base, tip))
         end_ev = events(rows, "quan_end")[0]["data"]
         self.assertEqual(end_ev["reason"], "time")
-        self.assertEqual(end_ev["earned"], dish["price"] + tip)
+        self.assertEqual(end_ev["earned"], base + tip)
         self.assertAlmostEqual(end_ev["reputation"], q["reputation_initial"] + q["tip_reputation"])
 
         end = rows[-1]
         self.assertEqual(end["type"], "end")
         self.assertEqual(end["score"], end["earned"] + 100 * math.floor(end["reputation"]))
         used = dish["recipe"]
-        left = {k: n - used.get(k, 0) for k, n in INVENTORY.items() if n - used.get(k, 0) > 0}
-        self.assertEqual(snapshots(rows)[-1]["stock"], left)  # nguyên liệu đã dùng cho món
+        left = {k: n - used.get(k, 0) for k, n in COUNTS.items() if n - used.get(k, 0) > 0}
+        self.assertEqual(counts(snapshots(rows)[-1]["stock"]), left)  # nguyên liệu đã dùng cho món
 
     def test_dock_checked_before_harvest(self):
         # Nút đặt ngay tại bến: interact phải cập bến (gather_end docked), không hái
@@ -113,7 +125,7 @@ class Phase1EndToEnd(unittest.TestCase):
             self.assertEqual(code, 0, err)
             rows = read_jsonl(w.path("g.jsonl"))
             with open(inv, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": {}})
+                self.assertEqual(json.load(f), {"items": []})
         self.assertEqual([e["name"] for e in events(rows)], ["gather_end"])
         self.assertEqual(rows[-1]["reason"], "docked")
 

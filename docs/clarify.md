@@ -8,3 +8,6 @@
 | 4 | 2026-11-21 (P2) | Tick đổi pha trong `--mode day` có ghi snapshot dù không trùng `--snapshot-every`? | Có: runner ép một snapshot ở tick đổi pha/đổi Ngày (vẫn tối đa 1 snapshot/tick) để kiểm `phase_tick:0`. | C (QA), báo Đức |
 | 5 | 2026-11-21 (P2) | Snapshot quán có thêm trường `available` (kho trừ phần giữ chỗ) có vi phạm contract? | Giữ: là trường bổ sung, test hộp đen không cấm trường thừa; HUD dùng để báo món nấu được. | C (QA) |
 | 6 | 2026-11-21 (P2) | `chonoi.live --mode day` mặc định bao nhiêu Ngày? | 5 (D1–D5), cho đổi bằng `--days 1..5`; ngoài miền → mã 2 như headless. | C, báo Nguyên |
+| 7 | 2026-11-21 (P3) | Snapshot JSONL làm tròn fresh 3 chữ số, file kho thì không — smoke "so chính xác độ tươi" so thế nào? | File kho ghi đủ chính xác (`fresh_out`); so snapshot/`gather_end.inventory` với file theo dung sai quan sát ±0.01 của TICKET-03, id/kind so chính xác. | C (QA) |
+| 8 | 2026-11-21 (P3) | Hàng trong giỏ đã < 30 từ scenario có phát `spoiled` không? | Không: chỉ phát khi đi từ ≥ 30 xuống < 30. | C (QA) |
+| 9 | 2026-11-21 (P3) | HUD lấy ngưỡng ươn ở đâu? | `live` gắn `meta.freshness` từ contract; client không hard-code (mặc định 30 chỉ khi thiếu). | C, báo Nguyên |
