@@ -30,3 +30,7 @@ Bằng chứng tạo bằng lệnh thật trên Windows + Git Bash (Python 3.10,
 - Đạt toàn bộ AC lõi Phase 2; không làm mở rộng (nhóm 4 người không bắt buộc).
 - Phần vẽ HUD/menu chỉ kiểm tay trên Chrome; giao diện chưa có test tự động.
 - Giả định đã ghi `docs/clarify.md` (#4–#6).
+
+## Kiểm lại trước release v1.0.0 (2026-11-21)
+
+Checkout sạch commit main 304d659ebf570c14cbed2f5db41583dae9cb9afd: 71 unittest đạt, check_team đạt, gather/quan seed=1 ticks=3600 giống từng byte. Xem [metadata](../proof/phase-2/release-recheck.json), [unittest](../proof/phase-2/unittest.log), [tất định](../proof/phase-2/determinism.log). Các nhận xét trạng thái nhánh/TEAM cũ phía trên là lịch sử, không phải trạng thái release hiện tại.

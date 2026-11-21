@@ -1,4 +1,3 @@
-# branch haianh @ 951e340 (+ working tree: verification/phase-4.md, AGENTS.md, members/haianh020505.md), Python 3.10.11, Windows, PYTHONUTF8=1
 test_choke_and_faint (test_gather_slice1.TestGatherSlice1)
 Hết oxy đủ choke_interval_ticks thì choke trừ HP, HP về 0 thì faint và giỏ rỗng. ... ok
 test_dive_and_surface_events (test_gather_slice1.TestGatherSlice1)
@@ -15,18 +14,56 @@ test_state_input_and_clean_stop (test_live.LiveServerTest) ... ok
 test_dock_checked_before_harvest (test_p1_integration.Phase1EndToEnd) ... ok
 test_gather_and_quan_deterministic_bytes (test_p1_integration.Phase1EndToEnd) ... ok
 test_gather_to_quan_full_service (test_p1_integration.Phase1EndToEnd) ... ok
+test_bad_day_scenarios (test_p2_day.DayCliAndScenarioExit2) ... ok
+test_day_rejects_file_inventory_flags (test_p2_day.DayCliAndScenarioExit2) ... ok
+test_days_flag_rules (test_p2_day.DayCliAndScenarioExit2) ... ok
+test_good_day_scenario (test_p2_day.DayCliAndScenarioExit2) ... ok
+test_buy_max_level_and_shop_timeout (test_p2_day.DayLoop) ... ok
+test_paused_shop_timer_frozen (test_p2_day.DayLoop) ... ok
+test_scenario_hold_goes_to_quan_stock (test_p2_day.DayLoop) ... ok
+test_shop_buy_then_upgrade_active_next_day (test_p2_day.DayLoop) ... ok
+test_tick0_events_then_phase_transitions_same_tick (test_p2_day.DayLoop) ... ok
+test_initial_fish_distinct_spawn_points_and_scheduled_spawn (test_p2_day.FishAndMonsters) ... ok
+test_monster_faint_ends_gather_same_tick (test_p2_day.FishAndMonsters) ... ok
+test_monster_hit_loses_half_hold_lifo_and_recoils (test_p2_day.FishAndMonsters) ... ok
+test_random_fish_false_fixture_stands_still (test_p2_day.FishAndMonsters) ... ok
+test_pause_freezes_sim_and_resume_runs_same_step (test_p2_day.Pause) ... ok
+test_two_stoves_cook_in_parallel_and_closing_rules (test_p2_day.QuanTwoStovesAndClosing) ... ok
 test_bad_exit_2_without_output (test_p2_validation.Phase2Validation) ... ok
 test_reserved_over_inventory_file_exit_2 (test_p2_validation.Phase2Validation) ... ok
 test_valid_edges_still_run (test_p2_validation.Phase2Validation) ... ok
+test_version_and_freshness_tuning (test_p3_fresh.ContractV12) ... ok
+test_day1_keeps_template_ids_next_day_new_ids_and_handoff_same_tick (test_p3_fresh.DayIds) ... ok
+test_count_format_and_bad_instances_exit_2 (test_p3_fresh.FileHandoff) ... ok
+test_smoke_gather_file_to_quan (test_p3_fresh.FileHandoff)
+Smoke của TICKET-03: mẫu ngưỡng với fresh 100, cập bến ở frame 0, quan --inventory --ticks 0. ... ok
+test_spoiled_items_handed_over_and_kept (test_p3_fresh.FileHandoff) ... ok
+test_auto_reserve_skips_spoiled (test_p3_fresh.ReserveAndPrice) ... ok
+test_price_fixed_from_freshness_at_cook (test_p3_fresh.ReserveAndPrice) ... ok
+test_reserved_item_spoils_no_replacement_unfulfillable (test_p3_fresh.ReserveAndPrice) ... ok
+test_reserved_item_spoils_then_rereserved_freshest (test_p3_fresh.ReserveAndPrice) ... ok
+test_fresh_30_spoils_on_first_gather_step (test_p3_fresh.Threshold) ... ok
+test_pause_stops_decay (test_p3_fresh.Threshold) ... ok
+test_spoiled_emitted_once_and_clamped_at_zero (test_p3_fresh.Threshold) ... ok
+test_threshold_branch_survives_file_round_trip (test_p3_fresh.Threshold) ... ok
 test_malformed_inputs_exit_2_no_crash (test_p3_robustness.Phase3Robustness) ... ok
 test_outputs_are_strict_json (test_p3_robustness.Phase3Robustness) ... ok
+test_bad_args_exit_2 (test_p4_release.BenchMetrics) ... ok
+test_bad_measurements_rejected (test_p4_release.BenchMetrics) ... ok
+test_formula (test_p4_release.BenchMetrics) ... ok
+test_k_at_least_one (test_p4_release.BenchMetrics) ... ok
+test_missing_browser_fails_cleanly_without_output (test_p4_release.BenchMetrics) ... ok
+test_version_and_commands_at_root (test_p4_release.ContractV13) ... ok
+test_bad_args_exit_2 (test_p4_release.Soak) ... ok
+test_beyond_five_days_repeats_plan (test_p4_release.Soak) ... ok
+test_days_complete_no_crash_and_deterministic (test_p4_release.Soak) ... ok
 test_bad_frames_raise (test_python_starter_units.Units) ... ok
-test_catch_is_a_v10_button_and_attack_is_not (test_python_starter_units.Units) ... ok
 test_id_allocator_continues_after_max (test_python_starter_units.Units) ... ok
 test_id_sorting (test_python_starter_units.Units) ... ok
 test_input_edges_and_inherit (test_python_starter_units.Units) ... ok
 test_live_inputs_keep_fast_tap_edge (test_python_starter_units.Units) ... ok
 test_session_steps_gather_and_dock (test_python_starter_units.Units) ... ok
+test_v11_buttons_accepted_unknown_rejected (test_python_starter_units.Units) ... ok
 test_customer_arrives_and_reserves_stock (test_quan_slice3.TestQuanSlice3)
 Khách đến tại first_customer_tick (120) và giữ chỗ nguyên liệu. ... ok
 test_customer_patience_and_leaves (test_quan_slice3.TestQuanSlice3)
@@ -71,7 +108,8 @@ test_too_few_members (test_team_check.TeamCheck) ... ok
 test_wrong_size_duplicate_and_outsider (test_team_check.TeamCheck) ... ok
 
 ----------------------------------------------------------------------
-Ran 56 tests in 15.158s
+Ran 93 tests in 62.754s
 
 OK
+
 exit 0

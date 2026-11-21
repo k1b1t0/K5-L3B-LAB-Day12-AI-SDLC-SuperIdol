@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-21T22:37:17.894116",
+  "python": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+  "branch": "phase4-v1.3",
+  "commit": "359abab275c049563832fd247e8085a5d6a70fb5",
+  "note": "Working tree proof; not post-merge main verification.",
+  "working_tree_changes": "release docs plus bench launch cleanup and regression test; final commit pending user"
+}

@@ -38,7 +38,7 @@ def threshold_fixture(fresh):
 class ContractV12(unittest.TestCase):
     def test_version_and_freshness_tuning(self):
         c = contract()
-        self.assertEqual(c["contract_version"], "1.2")
+        self.assertIn(c["contract_version"], ("1.2", "1.3"))  # v1.3 giữ nguyên gameplay/kho/JSONL của v1.2
         self.assertEqual(c["tuning"]["freshness"], {"initial": 100, "gather_decay_per_s": 0.5,
                                                     "quan_decay_per_s": 0.25, "spoiled_below": 30})
 

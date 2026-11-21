@@ -8,6 +8,8 @@
 - Vòng Ngày (v1.1): `python3 -m chonoi.headless --mode day --days 1 --seed 1 --ticks 30000 --out day.jsonl`
 - Chơi thử trên trình duyệt: `python3 -m chonoi.live --mode day` (hoặc `gather|quan`; mở địa chỉ in ra; WASD, E tương tác, Space bắt cá, Esc/P pause, R chơi lại, 1..n mua ở Shop, Enter đóng Shop, H tương phản cao)
 - Kiểm danh sách nhóm: `python3 tools/check_team.py`
+- Bench (cần Chrome/Chromium/Edge hoặc `CHONOI_BROWSER`): `python3 -m chonoi.bench --seed 42 --duration 30 --out bench.json`
+- Soak: `python3 -m chonoi.soak --seed 7 --days 10 --out soak.json` (so hai lần cùng seed sau khi bỏ `duration_s`).
 - Windows: test hộp đen gọi `headless_cmd` = `python3` → cần lệnh `python3` trong PATH (chép `python.exe` thành `python3.exe` vào một thư mục trong PATH, hoặc chạy trong WSL/Git Bash có python3). KHÔNG đổi `headless_cmd` trong contract (CI Ubuntu dùng `python3`). Đặt thêm `PYTHONUTF8=1` để stderr tiếng Việt không gây `UnicodeDecodeError` trong log test.
 
 ## Cấu trúc & quy ước

@@ -1,0 +1,6 @@
+{
+  "phase": 3,
+  "sha": "f1ccf22166fc8edc78e216a6e97020701937ff2b",
+  "source": "main history; clean detached checkout",
+  "python": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]"
+}
