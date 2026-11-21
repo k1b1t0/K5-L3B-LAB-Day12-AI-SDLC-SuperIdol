@@ -17,9 +17,11 @@
 - [x] Merge P2 (#5) và P3 (#6) bằng merge commit; mở PR nháp P4 (#7).
 - [x] Chốt log hồi quy sau sửa bench: 93 test đạt; ma trận P4 và số đo mới nhất.
 - [x] Verify main từng mốc và đẩy tag phase-1, phase-2, phase-3.
-- [ ] User tạo commit cuối, push P4; kiểm CI và chuyển #7 khỏi draft.
-- [ ] Merge #7; verify-phase trên main sau merge, kiểm clone sạch bản cuối.
-- [ ] Tag phase-4/v1.0.0 cùng SHA, ZIP và GitHub Release.
+- [x] User tạo commit cuối `cd2f49c`, push P4; #7 khỏi draft (PR không có CI check).
+- [x] Merge #7 (`72ff905`); verify-phase trên main sau merge, clone sạch bản cuối — [phase-4.md](phase-4.md#verify-trên-main-sau-merge-72ff905), log ở `docs/proof/phase-4/main/`.
+- [x] Tag phase-4/v1.0.0 cùng SHA `72ff905`, ZIP và GitHub Release v1.0.0.
+
+> Hai mục dưới là quy trình đã chạy, giữ lại làm hồ sơ.
 
 ## Commit cuối của Hải Anh (PowerShell)
 Rà `git diff` và `git status` trước khi commit.

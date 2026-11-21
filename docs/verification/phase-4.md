@@ -1,6 +1,6 @@
 # Ma trận kiểm chứng Phase 4 — contract 1.3 / release v1.0.0
 ## Phạm vi bằng chứng
-Bằng chứng mới chạy trên nhánh `phase4-v1.3` (Windows, Python 3.10), base `359abab`; metadata tại [environment.json](../proof/phase-4/environment.json). Working tree gồm sửa cleanup khi bench launch lỗi và hồ sơ release. Đây là proof nhánh trước commit cuối, **chưa phải verify trên main sau merge Phase 4**.
+Bằng chứng mới chạy trên nhánh `phase4-v1.3` (Windows, Python 3.10), base `359abab`; metadata tại [environment.json](../proof/phase-4/environment.json). Working tree gồm sửa cleanup khi bench launch lỗi và hồ sơ release. Bảng dưới là proof nhánh trước commit cuối; kết quả verify trên main sau merge nằm ở mục [Verify trên main sau merge](#verify-trên-main-sau-merge-72ff905).
 
 | Mục | Kiểm chứng / bằng chứng | Kết quả |
 |---|---|---|
@@ -10,19 +10,35 @@ Bằng chứng mới chạy trên nhánh `phase4-v1.3` (Windows, Python 3.10), b
 | P4-04 Soak tất định cùng seed 7 | [soak-determinism.log](../proof/phase-4/soak-determinism.log), [JSON 1](../proof/phase-4/soak-1.json), [JSON 2](../proof/phase-4/soak-2.json) | Giống sau khi bỏ duration_s |
 | P4-05 Oxy thấp và thủy quái gần: chữ/ký hiệu, tương phản cao | [ảnh gather](../proof/phase-4/warnings-hc-gather.jpg), hàm `warn()` trong web client | Đã xem lại ảnh kiểm chứng, thấy cả hai cảnh báo; chưa chạy walkthrough UI mới |
 | P4-06 Khách sắp giận: chữ/ký hiệu, tương phản cao | [ảnh quan](../proof/phase-4/warnings-hc-quan.jpg) | Đã xem lại ảnh kiểm chứng; HUD chưa có test UI tự động |
-| P4-07 Clone sạch, chơi trong ≤3 lệnh, không pip install | [clean-clone.log](../proof/phase-4/clean-clone.log), [server log](../proof/phase-4/clean-clone-server.log), [README](../../README.md) | Clone P4 tại 359abab, live HTTP 200 và Canvas; chờ retest main bản cuối |
+| P4-07 Clone sạch, chơi trong ≤3 lệnh, không pip install | [clean-clone.log](../proof/phase-4/clean-clone.log), [server log](../proof/phase-4/clean-clone-server.log), [README](../../README.md) | Clone P4 tại 359abab, live HTTP 200 và Canvas; retest main 72ff905 đạt ([log main](../proof/phase-4/main/clean-clone.log)) |
 | P4-08 Hồi quy P1–P3 và test release | [unittest.log](../proof/phase-4/unittest.log) | 93/93 test đạt sau sửa bench; exit 0 |
 | P4-09 Headless tất định | [determinism.log](../proof/phase-4/determinism.log) | gather/quan 3600 tick và day 30000 tick, seed 1, giống từng byte |
-| P4-10 Danh sách nhóm và đóng góp | [check_team.log](../proof/phase-4/check_team.log), [TEAM](../../TEAM.md), git shortlog --no-merges | 4 handle thật; mỗi người ≥3 commit có nội dung trên nhánh P4; kiểm lại main sau merge |
+| P4-10 Danh sách nhóm và đóng góp | [check_team.log](../proof/phase-4/check_team.log), [TEAM](../../TEAM.md), git shortlog --no-merges | 4 handle thật; mỗi người ≥3 commit có nội dung; kiểm lại trên main 72ff905 đạt ([commit-counts.log](../proof/phase-4/main/commit-counts.log)) |
 | P4-11 Hồ sơ release | [CHANGELOG](../../CHANGELOG.md), [release notes](../release-notes-v1.0.0.md), [LICENSE](../../LICENSE), [CREDITS](../../CREDITS.md), [retro](../retro.md), [phản tư Hải Anh](../members/haianh020505.md) | Đã bổ sung; giấy phép nhóm chỉ áp phần đóng góp nhóm sở hữu |
-| P4-12 Tag/release cùng commit và ZIP | [checklist tích hợp](release-checklist.md), PR #7 | Chờ commit cuối, merge P4, verify main và phát hành |
+| P4-12 Tag/release cùng commit và ZIP | [checklist tích hợp](release-checklist.md), PR #7, [release-tags.log](../proof/phase-4/main/release-tags.log) | Đạt: PR #7 merge bằng merge commit; `phase-4` và `v1.0.0` cùng trỏ 72ff905; GitHub Release v1.0.0 có `chonoi-v1.0.0.zip`, `SHA256SUMS.txt`, `verification-main.zip` |
 | P4-13 Bench không Traceback khi browser path sai | `BenchMetrics.test_missing_browser_fails_cleanly_without_output` | Test đỏ trước sửa; xanh sau sửa; không tạo bench.json khi lỗi |
 
 ## Đánh giá
 - Các log P4 cũ contract 1.0 đã được thay. Các proof P1/P2/P3 cũng được chạy lại trên commit main tương ứng; metadata ghi SHA từng mốc.
 - Không dùng doanh thu soak để suy ra chiến thuật bot tốt: bot chưa bắt cá.
 - Không dùng avg FPS để bỏ qua 1% low. Giữ cả lần đo đầu và lần đo sau sửa cleanup, ghi kết quả thật; chưa xác nhận ngưỡng hiệu năng chính thức.
-- Chưa nhận đủ điều kiện nộp cuối khi P4 chưa merge, chưa verify main và chưa có release. Xem checklist để thực hiện ngay sau commit cuối của Hải Anh.
+- P4 đã merge (#7), đã verify trên main sau merge (mục dưới) rồi mới gắn tag `phase-4`/`v1.0.0` và phát hành Release v1.0.0.
+
+## Verify trên main sau merge (72ff905)
+Chạy trên `main` tại `72ff905` (merge PR #7), Windows, Python 3.10.11; metadata tại [environment.json](../proof/phase-4/main/environment.json). Không có thay đổi sản phẩm sau commit `cd2f49c`. Log này cũng đính kèm trong Release v1.0.0 (`verification-main.zip`).
+
+| Kiểm tra | Bằng chứng | Kết quả |
+|---|---|---|
+| Danh sách nhóm | [check_team.log](../proof/phase-4/main/check_team.log) | Đạt, 4 handle |
+| Hồi quy đầy đủ | [unittest.log](../proof/phase-4/main/unittest.log) | 93 test đạt |
+| Headless gather/quan/day tất định | [determinism.log](../proof/phase-4/main/determinism.log) | Giống từng byte, seed 1 |
+| Soak 10 Ngày × 2 | [soak-determinism.log](../proof/phase-4/main/soak-determinism.log), [lần 1](../proof/phase-4/main/soak-1.json), [lần 2](../proof/phase-4/main/soak-2.json) | completed=10, crashes=0; giống sau khi bỏ duration_s |
+| Bench render | [bench.json](../proof/phase-4/main/bench.json), [bench.log](../proof/phase-4/main/bench.log) | avg 60.01 FPS, 1% low 57.3 FPS, load 865 ms (ngưỡng chính thức chưa xác nhận) |
+| Clone sạch, chơi live | [clean-clone.log](../proof/phase-4/main/clean-clone.log), [server log](../proof/phase-4/main/clean-clone-server.log) | HTTP 200, có Canvas, không pip install |
+| Đóng góp | [commit-counts.log](../proof/phase-4/main/commit-counts.log) | Mỗi thành viên ≥3 commit không phải merge |
+| Tag release | [release-tags.log](../proof/phase-4/main/release-tags.log) | `phase-4` = `v1.0.0` = 72ff905 |
+
+Không có GitHub CI check trên PR #7; verify chạy tay trên máy. Ảnh cảnh báo dùng lại từ proof nhánh, không chạy walkthrough UI mới.
 
 ## Số đo benchmark đã lưu
 - Lần đầu: avg 59.37 FPS; 1% low 27.74 FPS; load 1579 ms ([JSON](../proof/phase-4/bench-first-run.json), [log](../proof/phase-4/bench-first-run.log)).

@@ -1,0 +1,4 @@
+git clone URL; cd repo; python3 -m chonoi.live --mode day
+main SHA=72ff905f9371225b827f1f57f4fcd97f0da6ff37
+HTTP 200; Canvas present; no pip install
+exit 0
