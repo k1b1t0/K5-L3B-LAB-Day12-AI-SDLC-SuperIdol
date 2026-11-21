@@ -5,7 +5,7 @@
 | Thành viên | GitHub handle | Module chính | Vai quy trình | Người dự phòng cho |
 |---|---|---|---|---|
 | Nguyen Minh Duc (2A202603960) | k1b1t0 | sim/gather | Integrator | sim/quan |
-| Nam Tran | nam-tran | sim/quan | PO | sim/gather |
+| Nguyen Thanh Nam (2A201601740) | n4malias | sim/quan | PO | sim/gather |
 | Member C | member-c | qa | QA Lead | sim/quan |
 | Member D | member-d | client/ui | Scrum/Release | client/ui |
 
