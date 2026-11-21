@@ -122,7 +122,8 @@ const MOVE_KEYS = { w: "u", arrowup: "u", s: "d", arrowdown: "d", a: "l", arrowl
 let queue = [], inflight = false, lastSent = "";
 
 // Màn hình phía client (không ảnh hưởng luật): menu chính -> chơi; intro/result phủ lên và giữ sim ở pause.
-let screen = "menu";          // menu | play | quit
+const BENCH = new URLSearchParams(location.search).has("bench");  // v1.3: python3 -m chonoi.bench
+let screen = BENCH ? "play" : "menu";          // menu | play | quit
 let menuSel = 0;              // 0 = Chơi, 1 = Thoát
 let intro = null;             // {kind: "day"|"evening"|"result", until: ms, data}
 let userPaused = false;       // Esc/P
@@ -325,6 +326,14 @@ function fit() {
   }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   return [w, h];
+}
+// Cảnh báo (v1.3): chữ trên nền tối để đọc được ở cả chế độ thường và tương phản cao
+function warn(s, x, y, color, size = 22) {
+  ctx.font = "bold " + Math.max(MIN_FONT, size) + "px system-ui, sans-serif";
+  const tw = ctx.measureText(s).width;
+  ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(x - tw / 2 - 10, y - size, tw + 20, size + 10);
+  ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.strokeRect(x - tw / 2 - 10, y - size, tw + 20, size + 10);
+  text(s, x, y, { align: "center", size, bold: true, color });
 }
 function text(s, x, y, o = {}) {
   ctx.font = (o.bold ? "bold " : "") + Math.max(MIN_FONT, o.size || 14) + "px system-ui, sans-serif";
@@ -651,8 +660,11 @@ function drawGather(w, h) {
   // Cảnh báo thủy quái: chữ + viền tím
   if (monsterNear) {
     ctx.strokeStyle = "rgba(171, 71, 188, 0.8)"; ctx.lineWidth = 8; ctx.strokeRect(12, 12, w - 24, h - 24);
-    text("⚠ Thủy quái!", w / 2, 100, { align: "center", size: 24, bold: true, color: "#e040fb" });
+    warn("🐊 ⚠ Thủy quái gần!", w / 2, 200, "#e040fb", 24);
   }
+  // v1.3: cảnh báo oxy sắp hết bằng chữ (không chỉ màu)
+  if (p && p.oxygen_max_ticks && p.oxygen_ticks > 0 && p.oxygen_ticks < p.oxygen_max_ticks * 0.25)
+    warn("⚠ Oxy sắp hết — ngoi lên!", w / 2, 244, "#ffeb3b");
   if (p && p.oxygen_ticks === 0 && p.pos[1] > 0.5) text("Hết hơi!", w / 2, 130, { align: "center", size: 24, bold: true, color: "#ff1744" });
 
   // HUD trên màn hình
@@ -777,6 +789,7 @@ function drawQuan(w, h) {
         const frac = c.patience_ticks_left / patMax;   // < 25%: đỏ
         const col = frac > 0.5 ? "#4caf50" : frac > 0.25 ? "#ffa726" : "#f44336";
         bar(cx - 0.9 * s, cy + 0.75 * s, 1.8 * s, 6, frac, col);
+        if (frac <= 0.25) warn("😠 sắp giận!", cx, cy - 1.75 * s, "#ff5252", 13);  // v1.3
         // Vạch mốc tip (50%)
         ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5; ctx.beginPath();
         ctx.moveTo(cx, cy + 0.75 * s); ctx.lineTo(cx, cy + 0.75 * s + 6); ctx.stroke();
@@ -854,8 +867,26 @@ function drawFloatingTexts() {
   }
 }
 
-function frame() {
+// Benchmark (v1.3): làm nóng `warmup` s từ khung đầu của cảnh, đo `duration` s, gửi số đo về máy chủ.
+const benchQ = new URLSearchParams(location.search);
+const bench = BENCH ? { warmup: +benchQ.get("warmup") * 1000, dur: +benchQ.get("duration") * 1000, dts: [] } : null;
+function benchFrame(t) {
+  if (!bench || bench.sent || !snap) return;
+  if (bench.first === undefined) { bench.first = t; bench.firstEpoch = Date.now(); return; }
+  if (t - bench.first < bench.warmup) { bench.last = t; return; }
+  if (bench.start === undefined) { bench.start = bench.last = t; return; }
+  bench.dts.push((t - bench.last) / 1000); bench.last = t;
+  if (t - bench.start >= bench.dur) {
+    bench.sent = true;
+    const k = Math.max(1, Math.ceil(0.01 * bench.dts.length));
+    const slow = bench.dts.slice().sort((a, b) => b - a).slice(0, k);
+    fetch("/bench", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(
+      { frames: bench.dts.length, measured_s: (t - bench.start) / 1000, slowest_s: slow, first_frame_epoch_ms: bench.firstEpoch }) });
+  }
+}
+function frame(t) {
   requestAnimationFrame(frame);
+  benchFrame(t);
   const [w, h] = fit();
   ctx.fillStyle = highContrast ? "#000" : "#0c1218"; ctx.fillRect(0, 0, w, h);
   if (screen !== "play") {

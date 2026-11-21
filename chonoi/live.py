@@ -46,6 +46,8 @@ class LiveGame:
         self._lock = threading.Lock()
         self._stop = threading.Event()
         self._thread = None
+        self.bench_result = None          # v1.3: số đo do trang gửi về (python3 -m chonoi.bench)
+        self.bench_done = threading.Event()
         self._reset()
 
     def _reset(self):
@@ -184,6 +186,12 @@ class _Handler(BaseHTTPRequestHandler):
                 self.game.set_input(body)
             elif path == "/restart":
                 self.game.restart()
+            elif path == "/bench":
+                body = json.loads(raw.decode("utf-8") or "{}")
+                if not isinstance(body, dict):
+                    raise ValueError("body phải là object")
+                self.game.bench_result = body
+                self.game.bench_done.set()
             else:
                 self._send(404, b'{"error":"khong co"}')
                 return
