@@ -1,0 +1,14 @@
+$ gather --scenario (fresh 100) --inputs (interact frame 0) --inventory-out inv.json
+exit 0
+--- gather_end:
+{"type":"event","tick":1,"phase":"gather","name":"gather_end","data":{"reason":"docked","inventory":{"items":[{"id":"I1","kind":"ca_linh","fresh":99.992}]}}}
+--- inv.json:
+{"items":[{"id":"I1","kind":"ca_linh","fresh":99.99166666666666}]}
+$ quan --inventory inv.json --ticks 0
+exit 0
+stock tick 0: [{'id': 'I1', 'kind': 'ca_linh', 'fresh': 99.992}]
+id/kind: KHỚP | fresh (JSONL làm tròn 3 chữ số, dung sai 0.01): KHỚP
+fresh trong file = 100 - 1/120: True
+$ kho đếm v1.1 -> mã 2
+đầu vào sai: items phải là mảng cá thể {id, kind, fresh} (kho đếm v1.1 không còn hợp lệ)
+exit 2

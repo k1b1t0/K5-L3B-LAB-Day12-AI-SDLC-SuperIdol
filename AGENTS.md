@@ -21,6 +21,7 @@
 
 - (Phase 2, v1.1) Giỏ/kho trong sim là cá thể `{id,kind,fresh}`; cấp id `I…` bằng `IdAllocator` dùng chung xuyên pha/Ngày. Luật chung ở `chonoi/sim/common.py`, vòng Ngày ở `chonoi/sim/day.py`. Đổi pha trong day ghi snapshot ép ở tick đó. Test day: `tests/test_p2_day.py`.
 - (Phase 3) Không được crash với đầu vào hỏng: mọi lỗi đọc/kiểu/giá trị → `BadInput` (mã 2), không bao giờ Traceback/mã 1. Bộ quét `tests/test_p3_robustness.py` — thêm trường mới thì thêm ca hỏng vào `CASES`. Đầu ra JSONL phải là JSON chuẩn (không NaN/Infinity).
+- (Phase 3, v1.2) Kho cá thể `{id,kind,fresh}` ở file, scenario và JSONL; đọc/ghi chỉ qua `chonoi/inventory.py` (`validate_items`, `inventory_payload`, `items_out`). Độ tươi là `Fraction` trong sim (so ngưỡng/floor chính xác), JSONL làm tròn 3 chữ số → test so fresh với dung sai ±0.01. Fixture dùng `inst([...])` trong `tests/helpers.py`. Test v1.2: `tests/test_p3_fresh.py`.
 - (Phase 4) Trước khi nộp/gắn tag: chạy `verify-phase` trên `main` sau merge (không chỉ trên nhánh), log vào `docs/proof/phase-N/`. Merge PR bằng **merge commit**, không squash (giữ tác giả + hash dẫn trong `docs/members/`). Commit chỉ tính khi handle tác giả có trong `TEAM.md` → kiểm `git shortlog -sn` với `TEAM.md`.
 
 ## Ai sở hữu file nào (SuperIdol)
