@@ -7,7 +7,7 @@
 | Nguyen Minh Duc (2A202603960) | k1b1t0 | sim/gather | Integrator | sim/quan |
 | Nguyen Thanh Nam (2A201601740) | n4malias | sim/quan | PO | sim/gather |
 | Member C | member-c | qa | QA Lead | sim/quan |
-| Member D | member-d | client/ui | Scrum/Release | client/ui |
+| Le Thanh Nguyen (2A202603733) | NguyenLTpk | client/ui | Scrum/Release | client/ui |
 
 **Vai quy trình:** PO (đầu mối hỏi giảng viên, giữ `docs/clarify.md`) · Integrator (giữ `docs/contracts/`, gắn tag) · QA lead · Scrum/Release. Có thể kiêm.
 

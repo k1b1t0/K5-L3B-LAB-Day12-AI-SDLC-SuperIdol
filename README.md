@@ -23,9 +23,21 @@ python3 -m chonoi.live --mode gather                                # chơi th�
 
 Game cần chế độ **headless** theo Test Contract (`python3 -m chonoi.headless --mode gather|quan …`) để được chạy và chấm tự động. **Công nghệ không ràng buộc**: khung Python trong `chonoi/` chỉ là gợi ý, chi tiết ở [`docs/STARTER.md`](docs/STARTER.md).
 
-## Tự do sáng tạo
+## Sáng tạo của nhóm (SuperIdol)
 
-Ngoài phần đề yêu cầu, nhóm được **thêm** nhân vật, loài cá/cây, sinh vật, món, bản đồ, cơ chế, câu chuyện, đồ họa, âm nhạc… với ba điều kiện: **không phá phần cố định** (tắt ở headless), ghi mục **"Sáng tạo của nhóm"** trong README của nhóm, và **làm lõi đúng trước**.
+Thực hiện bởi: **Lê Thành Nguyên (`NguyenLTpk` / MSSV: `2A202603733`) — Module `client/ui` & Scrum/Release**.
+
+Nhóm đã phát triển và tích hợp các tính năng sáng tạo đặc sắc cho phiên bản trình duyệt trực tiếp (`chonoi.live`), bảo đảm **hoàn toàn tắt ở chế độ headless** để không ảnh hưởng đến bất kỳ chỉ số test tự động ẩn nào:
+1. **Âm thanh tổng hợp thời gian thực (Procedural Web Audio API)**:
+   - Toàn bộ âm thanh được sinh trực tiếp bằng thuật toán dao động sóng âm (OscillatorNode, GainNode) của Web Audio API thuần, **không dùng file âm thanh bên ngoài, không lo vấn đề bản quyền**.
+   - Hiệu ứng âm thanh phong phú: tiếng tùm khi lặn (`dive`), tiếng ngoi lên mặt nước (`surface`), tiếng vợt bắt cá (`fish_caught`), tiếng chuông reo khi món chín tại bếp lò (`dish_ready`), tiếng keng tiền xu khi khách trả tiền và tip (`paid`), tiếng thở dốc ngạt oxy (`choke`).
+   - Tích hợp nút bật/tắt âm thanh trên giao diện và phím tắt nhanh `[M]` (Mute/Unmute).
+2. **Hiệu ứng chữ nổi bay sinh động (Floating Texts)**:
+   - Hiển thị phản hồi trực quan ngay tại vị trí trung tâm khi có sự kiện: `+60k (Tip +18k!)`, `🔔 Món đã chín!`, `⚠ ĐẦY GIỎ!`, `💔 NGẠT OXY! -1 HP`, `🚪 Khách bỏ về!`.
+3. **Bảng HUD Thực đơn & Kiểm tra nguyên liệu thời gian thực**:
+   - Hiển thị danh sách 3 món ăn Chợ Nổi kèm công thức và tự động kiểm tra kho nguyên liệu `stock` để báo `✔ ĐỦ` hoặc `✖ THIẾU` ngay trên màn hình.
+4. **Đồ họa Chợ Nổi miền Tây sông nước**:
+   - Tái hiện khung cảnh ghe xuồng neo bến Chợ Nổi với mái bạt che nắng, cọc neo bến, gợn sóng sông nước lăn tăn, vệt tia nắng xuyên qua mặt nước, hiệu ứng viền đỏ cảnh báo khi Út Sen sắp cạn oxy.
 
 ## Lịch 3 giờ
 
