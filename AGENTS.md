@@ -16,13 +16,14 @@
 - Mọi số ngẫu nhiên đi qua `Streams` (`chonoi/rng.py`); không dùng `random` toàn cục, không dùng đồng hồ hệ thống.
 - Sắp danh sách thực thể bằng `ids.sort_by_id`; cấp id bằng `IdAllocator`.
 - Lỗi đầu vào (contract/scenario/inputs/kho) → `raise BadInput` → mã thoát 2, trước khi ghi `--out`/`--inventory-out`.
+- (Phase 2) Kiểm số trong scenario bằng `_num` (chặn NaN/Infinity — `json.load` nhận chúng và làm JSONL hỏng). Bộ đếm có mức tối đa thì lấy mức đó từ tuning (`regrow_s`, `catch_cooldown_s`, `choke_interval_ticks`…), không viết số. Kiểm cần cả kho từ `--inventory` thì gọi từ `headless.py` sau `read_inventory` (ví dụ `check_reserved_fits`).
 
 ## Ai sở hữu file nào (SuperIdol)
 | Người (handle) | Module | Sở hữu chính |
 |---|---|---|
 | Đức (`k1b1t0`) | sim/gather, Integrator | `chonoi/sim/gather.py`, `TEAM.md`, `docs/contracts/`, gắn tag |
 | Nam (`n4malias`) | sim/quan, PO | `chonoi/sim/quan.py`, `docs/clarify.md`, `docs/plan/`, `docs/adr/` |
-| C (`haianh020505`) | qa, AI harness | `chonoi/scenario.py`, `chonoi/contract.py`, `tests/test_scenario_validation.py`, `tests/test_p*_*.py`, `docs/verification/`, `docs/proof/`, `AGENTS.md`, `.agents/skills/` |
+| C (`haianh020505`) | qa, AI harness | `chonoi/scenario.py`, `chonoi/contract.py`, phần kiểm đầu vào trong `chonoi/headless.py`, `tests/test_scenario_validation.py`, `tests/test_p*_*.py`, `docs/verification/`, `docs/proof/`, `AGENTS.md`, `.agents/skills/` |
 | D | client/ui, Scrum/Release | `chonoi/web/`, `README.md` (Sáng tạo), `docs/ai-usage-log.md`, `docs/standup.md`, `docs/retro.md`, `CHANGELOG.md`, `CREDITS.md` |
 
 Agent chỉ sửa file thuộc lát được giao; cần sửa file của người khác thì báo người đó.

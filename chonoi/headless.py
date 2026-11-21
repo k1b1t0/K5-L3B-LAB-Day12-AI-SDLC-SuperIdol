@@ -12,7 +12,7 @@ from .errors import BadInput
 from .inputs import load_frames
 from .inventory import read_inventory
 from .runner import run
-from .scenario import load_scenario
+from .scenario import check_reserved_fits, load_scenario
 
 
 class _Parser(argparse.ArgumentParser):
@@ -66,6 +66,8 @@ def main(argv=None) -> int:
         inventory = read_inventory(a.inventory) if a.inventory else None
         if inventory is not None and "stock" in scenario:
             raise BadInput("vừa có quan.stock vừa có --inventory")
+        if inventory is not None:  # (nhóm, QA) khách trong scenario giữ chỗ vượt kho đọc từ file
+            check_reserved_fits(scenario, inventory)
     except BadInput as e:
         sys.stderr.write(f"đầu vào sai: {e}\n")
         return 2
