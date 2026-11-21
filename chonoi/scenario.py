@@ -1,8 +1,10 @@
 """Nạp và kiểm scenario (Contract D). Trả về dict của đúng khối theo mode.
 
 KHUNG: kiểm cú pháp, id trùng, bộ đếm âm, khoang vượt sức chứa, trường lạ.
-TODO(nhóm): bổ sung kiểm mâu thuẫn mức luật mà nhóm cần (khách giữ chỗ quá kho, đơn assigned
-phải có đúng một món, khách eating thiếu giá/tip...) — xem PRD-0 mục D và 'Mâu thuẫn -> mã 2'.
+Quán (nhóm thêm): random_customers, reputation, trạng thái bếp nhất quán, khách (state, dish_id,
+patience/eat trong dải, reserved đúng schema).
+TODO(nhóm, chờ PRD-0 mục D): khách giữ chỗ quá kho, đơn assigned phải có đúng một món,
+khách eating thiếu giá/tip, định dạng `hand`.
 """
 
 import json
@@ -18,6 +20,8 @@ FISH_KINDS = ("ca_linh", "ca_loc")
 QUAN_PLAYER_KEYS = {"pos", "vel"}
 QUAN_KEYS = {"player", "stock", "hand", "stoves", "tables", "customers", "random_customers",
              "reputation", "time_left_ticks"}
+STOVE_STATES = ("idle", "cooking", "ready")
+CUSTOMER_STATES = ("waiting", "eating")
 
 
 def _check_ids(name, arr):
@@ -161,3 +165,54 @@ def _validate_quan(b, tuning):
             raise BadInput(f"customers.{c['id']}: table_id phải là bàn có thật")
     if len(table_ids) != len(set(table_ids)):
         raise BadInput("hai khách cùng bàn")
+    q, menu = tuning["quan"], tuning["menu"]
+    if "random_customers" in b and not isinstance(b["random_customers"], bool):
+        raise BadInput("random_customers phải là boolean")
+    if "reputation" in b and not (_num(b["reputation"])
+                                  and q["reputation_min"] <= b["reputation"] <= q["reputation_max"]):
+        raise BadInput(f"reputation phải trong [{q['reputation_min']}, {q['reputation_max']}]")
+    for s in b.get("stoves", []):
+        _validate_stove(s, menu)
+    pmax = int(round(q["patience_s"] * 60))
+    emax = int(round(q["eat_s"] * 60))
+    for c in b.get("customers", []):
+        name = f"customers.{c['id']}"
+        state = c.get("state", "waiting")
+        if state not in CUSTOMER_STATES:
+            raise BadInput(f"{name}.state phải là một trong {CUSTOMER_STATES}")
+        if c.get("dish_id") not in menu:
+            raise BadInput(f"{name}.dish_id phải là món có trong menu")
+        if state == "waiting" and "patience_ticks_left" in c:
+            _int_in(f"{name}.patience_ticks_left", c["patience_ticks_left"], 1, pmax)
+        if state == "eating" and "eat_ticks_left" in c:
+            _int_in(f"{name}.eat_ticks_left", c["eat_ticks_left"], 1, emax)
+        if "reserved" in c:
+            validate_items(c["reserved"])
+
+
+def _int_in(name, v, lo, hi):
+    if isinstance(v, bool) or not isinstance(v, int) or not (lo <= v <= hi):
+        raise BadInput(f"{name} phải là số nguyên trong [{lo}, {hi}]")
+
+
+def _validate_stove(s, menu):
+    name = f"stoves.{s['id']}"
+    state = s.get("state", "idle")
+    if state not in STOVE_STATES:
+        raise BadInput(f"{name}.state phải là một trong {STOVE_STATES}")
+    for key in ("cook_ticks_left", "ready_ticks"):
+        if key in s:
+            _nonneg_int(f"{name}.{key}", s[key])
+    dish, cook = s.get("dish"), s.get("cook_ticks_left", 0)
+    if state == "idle":
+        if dish is not None or cook or s.get("ready_ticks", 0):
+            raise BadInput(f"{name}: bếp idle không có món và bộ đếm phải bằng 0")
+        return
+    if dish not in menu:
+        raise BadInput(f"{name}.dish phải là món có trong menu khi bếp {state}")
+    if state == "cooking":
+        _int_in(f"{name}.cook_ticks_left", cook, 1, int(round(menu[dish]["cook_s"] * 60)))
+        if s.get("ready_ticks", 0):
+            raise BadInput(f"{name}: bếp đang nấu thì ready_ticks phải bằng 0")
+    elif cook:
+        raise BadInput(f"{name}: bếp ready thì cook_ticks_left phải bằng 0")
