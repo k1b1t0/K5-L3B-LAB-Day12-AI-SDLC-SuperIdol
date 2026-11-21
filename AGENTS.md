@@ -7,7 +7,7 @@
 - Headless: `python3 -m chonoi.headless --mode gather|quan --seed 1 --ticks 600 --out out.jsonl`
 - Chơi thử trên trình duyệt: `python3 -m chonoi.live --mode gather|quan` (mở địa chỉ in ra; WASD, E, Space, R)
 - Kiểm danh sách nhóm: `python3 tools/check_team.py`
-- Windows: test hộp đen gọi `headless_cmd` = `python3` → cần lệnh `python3` trong PATH (chép `python.exe` thành `python3.exe` vào một thư mục trong PATH, hoặc chạy trong WSL/Git Bash có python3). KHÔNG đổi `headless_cmd` trong contract (CI Ubuntu dùng `python3`).
+- Windows: test hộp đen gọi `headless_cmd` = `python3` → cần lệnh `python3` trong PATH (chép `python.exe` thành `python3.exe` vào một thư mục trong PATH, hoặc chạy trong WSL/Git Bash có python3). KHÔNG đổi `headless_cmd` trong contract (CI Ubuntu dùng `python3`). Đặt thêm `PYTHONUTF8=1` để stderr tiếng Việt không gây `UnicodeDecodeError` trong log test.
 
 ## Cấu trúc & quy ước
 - (Starter Python là TÙY CHỌN; nhóm có thể dùng ngôn ngữ khác nếu giữ Test Contract.) Khung do giảng viên cấp: `chonoi/{headless,inputs,scenario,contract,rng,ids,jsonl,inventory,runner,live}.py` và `chonoi/web/`. Hạn chế sửa; nếu phải sửa thì báo cả nhóm và ghi lại lý do.
